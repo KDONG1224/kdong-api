@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { QueryRunner as QR } from 'typeorm';
+import { Between, QueryRunner as QR } from 'typeorm';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
@@ -140,5 +140,11 @@ export class PostsController {
   @ApiOperation({ summary: '게시글 좋아요' })
   postLikePost(@Param('id') id: string) {
     return this.postsService.likePost(id);
+  }
+
+  @Post('/expose/:id')
+  @ApiOperation({ summary: '게시글 노출' })
+  postExposePost(@Param('id') id: string) {
+    return this.postsService.exposePost(id);
   }
 }

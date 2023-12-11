@@ -1,7 +1,7 @@
 // base
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 // services
 import { CommonService } from 'src/common/service/common.service';
@@ -36,7 +36,17 @@ export class PostsService {
         email: post.author.email,
         role: post.author.role
       },
-      tags: post.tags.map((tag) => tag)
+      tags: post.tags.map((item) => ({
+        id: item.id,
+        name: item.tag
+      })),
+      thumbnails: post.thumbnails.map((item) => ({
+        id: item.id,
+        location: item.location,
+        originalname: item.originalname,
+        mimetype: item.mimetype,
+        size: item.size
+      }))
     }));
 
     return {
@@ -48,9 +58,27 @@ export class PostsService {
   }
 
   async pagePaginatePosts(dto: PaginatePostsDto) {
-    return await this.commonService.paginate(dto, this.postsRepository, {
-      ...DEFAULT_POST_FIND_OPTIONS
-    });
+    const { where__fromDate, where__toDate, ...rest } = dto;
+
+    if (where__fromDate && where__toDate) {
+      return await this.commonService.paginate(
+        { ...rest },
+        this.postsRepository,
+        {
+          ...DEFAULT_POST_FIND_OPTIONS,
+          where: {
+            createdAt: Between(
+              new Date(where__fromDate),
+              new Date(where__toDate)
+            )
+          }
+        }
+      );
+    } else {
+      return await this.commonService.paginate(dto, this.postsRepository, {
+        ...DEFAULT_POST_FIND_OPTIONS
+      });
+    }
   }
 
   async getPostById(id: string) {
@@ -169,6 +197,24 @@ export class PostsService {
     });
 
     return result;
+  }
+
+  async exposePost(id: string) {
+    const post = await this.postsRepository.findOne({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('해당하는 포스트가 없습니다.');
+    }
+
+    await this.postsRepository.update({ id }, { expose: !post.expose });
+
+    return {
+      result: {
+        ...post,
+        expose: !post.expose
+      },
+      message: `게시글이 ${!post.expose ? '노출' : '숨김'} 처리되었습니다.`
+    };
   }
 
   // async incrementCommentCount(postId: number, qr?: QueryRunner) {

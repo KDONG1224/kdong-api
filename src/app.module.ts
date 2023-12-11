@@ -17,6 +17,7 @@ import { AuthModule } from './auth/module/auth.module';
 import { NoticeModule } from './notice/module/notice.module';
 import { QnaModule } from './qna/module/qna.module';
 import { TagsModule } from './tags/module/tags.module';
+import { CategoriesModule } from './categories/module/categories.module';
 
 // controllers
 import { AppController } from './app.controller';
@@ -30,6 +31,8 @@ import { PostsTable } from './posts/entity/posts.entity';
 import { NoticeTable } from './notice/entities/notice.entity';
 import { QnaTable } from './qna/entities/qna.entity';
 import { TagsTable } from './tags/entity/tags.entity';
+import { FileTable } from './common/entites/file.entity';
+import { CategoriesTable } from './categories/entity/categories.entity';
 
 // guards
 import { RolesGuard } from './users/guard/roles.guard';
@@ -46,7 +49,6 @@ import {
   ENV_DB_PORT_KEY,
   ENV_DB_USERNAME_KEY
 } from './common/consts/env-keys.const';
-import { FileTable } from './common/entites/file.entity';
 
 @Module({
   imports: [
@@ -67,7 +69,8 @@ import { FileTable } from './common/entites/file.entity';
         NoticeTable,
         QnaTable,
         TagsTable,
-        FileTable
+        FileTable,
+        CategoriesTable
       ],
       synchronize: true
     }),
@@ -77,7 +80,8 @@ import { FileTable } from './common/entites/file.entity';
     AuthModule,
     NoticeModule,
     QnaModule,
-    TagsModule
+    TagsModule,
+    CategoriesModule
   ],
   controllers: [AppController],
   providers: [
