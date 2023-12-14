@@ -30,6 +30,8 @@ import {
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileTable } from '../entites/file.entity';
 import { AwsModule } from 'src/aws/module/aws.module';
+import { BannersModule } from 'src/banners/module/banners.module';
+import { FaqsModule } from 'src/faqs/module/faqs.module';
 
 @Module({
   imports: [
@@ -76,7 +78,9 @@ import { AwsModule } from 'src/aws/module/aws.module';
     }),
     AuthModule,
     UsersModule,
-    AwsModule
+    AwsModule,
+    BannersModule,
+    FaqsModule
   ],
   controllers: [CommonController],
   providers: [CommonService],

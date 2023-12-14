@@ -9,6 +9,10 @@ import {
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
+// services
+import { BannersService } from 'src/banners/service/banners.service';
+import { FaqsService } from 'src/faqs/service/faqs.service';
+
 // entities
 import { BaseTable } from '../entites/base.entity';
 import { FileTable } from '../entites/file.entity';
@@ -26,13 +30,26 @@ export class CommonService {
   constructor(
     @InjectRepository(FileTable)
     private readonly fileRepository: Repository<FileTable>,
-    private readonly awsService: AwsService
+    private readonly awsService: AwsService,
+    private readonly bannersService: BannersService,
+    private readonly faqsService: FaqsService
   ) {}
 
   getRepository(qr?: QueryRunner) {
     return qr
       ? qr.manager.getRepository<FileTable>(FileTable)
       : this.fileRepository;
+  }
+
+  async getMainProfile() {
+    const banner = await this.bannersService.getBannerLists();
+    const faq = await this.faqsService.findAllFaqLists();
+
+    return {
+      bannerLists: banner.bannerLists,
+      faqLists: faq.faqLists,
+      message: '메인 프로필 조회에 성공했습니다.'
+    };
   }
 
   async paginate<T extends BaseTable>(

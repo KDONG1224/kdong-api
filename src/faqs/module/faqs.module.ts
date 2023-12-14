@@ -7,6 +7,7 @@ import { FaqsTable } from '../entity/faqs.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([FaqsTable])],
   controllers: [FaqsController],
-  providers: [FaqsService]
+  providers: [FaqsService],
+  exports: [FaqsService]
 })
 export class FaqsModule {}

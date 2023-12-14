@@ -1,7 +1,7 @@
 // base
 import {
   Controller,
-  Param,
+  Get,
   Post,
   UploadedFile,
   UploadedFiles,
@@ -19,10 +19,17 @@ import { User } from 'src/users/decorator/user.decorator';
 import { UsersTable } from 'src/users/entity/users.entity';
 import { QueryRunner } from '../decorator/query-runner.decorator';
 import { TransactionInterceptor } from '../interceptor/transaction.interceptor';
+import { IsPublic } from '../decorator/is-public.decorator';
 
 @Controller('common')
 export class CommonController {
   constructor(private readonly commonService: CommonService) {}
+
+  @Get('profile')
+  @IsPublic()
+  async getMainProfile() {
+    return await this.commonService.getMainProfile();
+  }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
