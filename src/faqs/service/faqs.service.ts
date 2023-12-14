@@ -73,11 +73,15 @@ export class FaqsService {
     };
   }
 
-  async updateExpose(id: string) {
-    const allFaq = await this.faqsRepository.find({ where: { expose: true } });
+  async updateExpose(id: string, body: { expose: boolean }) {
+    if (body.expose) {
+      const allFaq = await this.faqsRepository.find({
+        where: { expose: true }
+      });
 
-    if (allFaq.length >= 5) {
-      throw new BadRequestException('FAQ는 최대 5개까지 노출 가능합니다.');
+      if (allFaq.length >= 5) {
+        throw new BadRequestException('FAQ는 최대 5개까지 노출 가능합니다.');
+      }
     }
 
     const result = await this.findFaqList(id);
@@ -88,7 +92,7 @@ export class FaqsService {
 
     const data = {
       ...result.faq,
-      expose: !result.faq.expose
+      expose: body.expose
     };
 
     const expose = data.expose ? '숨김' : '노출';

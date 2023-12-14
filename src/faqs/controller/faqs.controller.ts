@@ -36,7 +36,10 @@ export class FaqsController {
 
   @Patch('expose/:id')
   @Roles(RolesEnum.ADMIN)
-  async updateExpose(@Param('id') id: string) {
-    return await this.faqsService.updateExpose(id);
+  async updateExpose(
+    @Param('id') id: string,
+    @Body() body: { expose: boolean }
+  ) {
+    return await this.faqsService.updateExpose(id, body);
   }
 }
