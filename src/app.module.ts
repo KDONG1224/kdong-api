@@ -52,6 +52,8 @@ import {
 import { BannersModule } from './banners/module/banners.module';
 import { BannersTable } from './banners/entity/banners.entity';
 import { AwsModule } from './aws/module/aws.module';
+import { FaqsModule } from './faqs/module/faqs.module';
+import { FaqsTable } from './faqs/entity/faqs.entity';
 
 @Module({
   imports: [
@@ -74,7 +76,8 @@ import { AwsModule } from './aws/module/aws.module';
         TagsTable,
         FileTable,
         CategoriesTable,
-        BannersTable
+        BannersTable,
+        FaqsTable
       ],
       synchronize: true
     }),
@@ -87,7 +90,8 @@ import { AwsModule } from './aws/module/aws.module';
     TagsModule,
     CategoriesModule,
     BannersModule,
-    AwsModule
+    AwsModule,
+    FaqsModule
   ],
   controllers: [AppController],
   providers: [
