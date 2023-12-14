@@ -8,6 +8,7 @@ import { BaseTable } from 'src/common/entites/base.entity';
 import { TagsTable } from 'src/tags/entity/tags.entity';
 import { UsersTable } from 'src/users/entity/users.entity';
 import { FileTable } from 'src/common/entites/file.entity';
+import { CategoriesTable } from 'src/categories/entity/categories.entity';
 
 @Entity()
 export class PostsTable extends BaseTable {
@@ -25,12 +26,10 @@ export class PostsTable extends BaseTable {
   @ApiProperty({ description: '내용' })
   content: string;
 
-  @Column({
-    default: null
+  @ManyToOne(() => CategoriesTable, (category) => category.posts, {
+    nullable: true
   })
-  @IsString()
-  @ApiProperty({ description: '카테고리' })
-  category?: string;
+  category?: CategoriesTable;
 
   @Column({
     default: false
@@ -52,6 +51,24 @@ export class PostsTable extends BaseTable {
     description: '게시글 태그들'
   })
   tags?: TagsTable[];
+
+  @Column({ nullable: true })
+  @IsString()
+  @ApiProperty({
+    description: '메인 색상',
+    default: '#000000',
+    required: false
+  })
+  mainColor?: string;
+
+  @Column({ nullable: true })
+  @IsString()
+  @ApiProperty({
+    description: '서브 색상',
+    default: '#f43f00',
+    required: false
+  })
+  subColor?: string;
 
   @Column()
   @IsNumber()

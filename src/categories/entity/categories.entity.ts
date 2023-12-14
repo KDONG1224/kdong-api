@@ -1,9 +1,10 @@
 // base
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { IsNumber, IsString } from 'class-validator';
 
 // entities
 import { BaseTable } from 'src/common/entites/base.entity';
+import { PostsTable } from 'src/posts/entity/posts.entity';
 
 // consts
 import { DeleteEnum } from '../consts/deletes.const';
@@ -31,4 +32,7 @@ export class CategoriesTable extends BaseTable {
   @Column()
   @IsString()
   createdByUserId: string;
+
+  @OneToMany(() => PostsTable, (post) => post.category)
+  posts?: PostsTable[];
 }

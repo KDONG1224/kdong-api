@@ -1,8 +1,13 @@
+// base
 import { PickType } from '@nestjs/mapped-types';
-import { PostsTable } from '../entity/posts.entity';
 import { IsOptional, IsString } from 'class-validator';
-import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
 import { Type } from 'class-transformer';
+
+// entities
+import { PostsTable } from '../entity/posts.entity';
+
+// dtos
+import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
 
 export class CreatePostsDto extends PickType(PostsTable, ['title', 'content']) {
   @IsString({
@@ -14,4 +19,16 @@ export class CreatePostsDto extends PickType(PostsTable, ['title', 'content']) {
   @Type(() => Array<Express.Multer.File & BaseFileUploadDto>)
   @IsOptional()
   thumbnails?: Array<Express.Multer.File & BaseFileUploadDto>;
+
+  @IsString()
+  @IsOptional()
+  category?: string;
+
+  @IsString()
+  @IsOptional()
+  mainColor?: string;
+
+  @IsString()
+  @IsOptional()
+  subColor?: string;
 }

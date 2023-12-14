@@ -46,6 +46,8 @@ import {
         fieldSize: 25 * 1024 * 1024
       },
       fileFilter: (req, file, callback) => {
+        console.log('== fileFilter : file == : ', file);
+
         const ext = extname(file.originalname);
 
         if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') {
@@ -67,9 +69,13 @@ import {
         }),
         bucket: process.env[ENV_AWS_S3_BUCKET_NAME_KEY],
         metadata(req, file, callback) {
-          callback(null, { owner: 'kdong' });
+          console.log('== metadata : file == : ', file);
+
+          callback(null, { ...file });
         },
         key: function (req, file, callback) {
+          console.log('== key : file == : ', file);
+
           const folderName = `${process.env[ENV_AWS_S3_FOLDER_KEY]}/`;
           const fileName = `${uuid()}${extname(file.originalname)}`;
 

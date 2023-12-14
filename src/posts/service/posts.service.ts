@@ -46,7 +46,13 @@ export class PostsService {
         originalname: item.originalname,
         mimetype: item.mimetype,
         size: item.size
-      }))
+      })),
+      category: {
+        id: post.category && post.category.id,
+        categoryName: post.category && post.category.categoryName,
+        categoryNumber: post.category && post.category.categoryNumber,
+        subCategoryNumber: post.category && post.category.subCategoryNumber
+      }
     }));
 
     return {
@@ -107,6 +113,9 @@ export class PostsService {
         id
       },
       ...post,
+      category: {
+        id: post.category
+      },
       tags: [],
       thumbnails: [],
       readCount: 0,
@@ -125,7 +134,9 @@ export class PostsService {
 
       await this.createPosts(userId, {
         title: dummyPost.title + ` - 테스트 제목 ${i + 1}`,
-        content: dummyPost.content + ` - 테스트 내용 ${i + 1}`
+        content: dummyPost.content + ` - 테스트 내용 ${i + 1}`,
+        mainColor: '#ffffff',
+        subColor: '#f43f00'
       });
     }
 
@@ -145,12 +156,18 @@ export class PostsService {
       ...find,
       ...post,
       tags: [],
-      thumbnails: []
+      thumbnails: [],
+      category: {
+        id: post.category
+      }
     };
 
-    const result = await this.postsRepository.save(data);
+    await this.postsRepository.save(data);
 
-    return result;
+    return {
+      ...data,
+      message: '게시글이 수정되었습니다.'
+    };
   }
 
   async deletePost(id: string) {

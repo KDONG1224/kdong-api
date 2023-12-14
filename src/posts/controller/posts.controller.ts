@@ -98,6 +98,8 @@ export class PostsController {
   ) {
     const post = await this.postsService.createPosts(id, body);
 
+    console.log('== thumbnails == : ', thumbnails);
+
     const tags = body.tags.split(',');
 
     for (let i = 0; i < tags.length; i++) {
@@ -123,10 +125,47 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @Roles(RolesEnum.ADMIN)
+  @UseInterceptors(TransactionInterceptor)
+  @UseInterceptors(FilesInterceptor('thumbnails'))
   @UseGuards(IsPostMineOrAdminGuard)
   @ApiOperation({ summary: '게시글 수정' })
-  patchPosts(@Param('id') id: string, @Body() body: UpdatePostsDto) {
-    return this.postsService.updatePosts(id, body);
+  async patchPosts(
+    @Param('id') id: string,
+    @User() user: UsersTable,
+    @UploadedFiles() thumbnails: Array<Express.Multer.File & BaseFileUploadDto>,
+    @Body() body: UpdatePostsDto,
+    @QueryRunner() qr: QR
+  ) {
+    console.log('== id, body == : ', id, body);
+    console.log('== thumbnails == : ', thumbnails);
+
+    const update = await this.postsService.updatePosts(id, body);
+
+    // const tags = body.tags.split(',');
+
+    // for (let i = 0; i < tags.length; i++) {
+    //   await this.tagsSerivce.createTag(
+    //     {
+    //       update,
+    //       tag: tags[i]
+    //     },
+    //     qr
+    //   );
+    // }
+
+    // for (let i = 0; i < thumbnails.length; i++) {
+    //   await this.commonService.uploadFile(
+    //     user.id,
+    //     id,
+    //     { ...thumbnails[i], sequence: i + 1 },
+    //     qr
+    //   );
+    // }
+
+    console.log('== updatePost == : ', update);
+
+    return update;
   }
 
   @Delete(':id')

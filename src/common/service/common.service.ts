@@ -128,7 +128,7 @@ export class CommonService {
   ) {
     const repository = this.getRepository(qr);
 
-    console.log('== file == : ', file);
+    console.log('== uploadFile : file == : ', file);
 
     const folder = file.key.split('/')[0];
     const filename = file.key.split('/')[1];

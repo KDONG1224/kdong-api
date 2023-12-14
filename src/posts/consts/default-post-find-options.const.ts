@@ -6,6 +6,7 @@ export const DEFAULT_POST_FIND_OPTIONS: FindManyOptions<PostsTable> = {
   relations: {
     author: true,
     tags: true,
-    thumbnails: true
+    thumbnails: true,
+    category: true
   }
 };
