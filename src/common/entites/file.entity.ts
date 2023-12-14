@@ -3,6 +3,7 @@ import { BaseTable } from './base.entity';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { UsersTable } from 'src/users/entity/users.entity';
 import { PostsTable } from 'src/posts/entity/posts.entity';
+import { BannersTable } from 'src/banners/entity/banners.entity';
 
 @Entity()
 export class FileTable extends BaseTable {
@@ -11,6 +12,9 @@ export class FileTable extends BaseTable {
 
   @ManyToOne(() => PostsTable, (post) => post.thumbnails)
   post: PostsTable;
+
+  @ManyToOne(() => BannersTable, (banner) => banner.bannerImages)
+  banner: BannersTable;
 
   @Column({
     default: 1
@@ -54,8 +58,4 @@ export class FileTable extends BaseTable {
   @Column()
   @IsString()
   location: string;
-
-  @Column()
-  @IsString()
-  contentType: string;
 }

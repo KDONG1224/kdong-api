@@ -5,7 +5,6 @@ import { IsNumber, IsOptional } from 'class-validator';
 export class BaseFileUploadDto extends PickType(FileTable, [
   'key',
   'location',
-  'contentType',
   'bucket'
 ]) {
   @IsNumber()

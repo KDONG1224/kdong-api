@@ -15,16 +15,18 @@ import { FileTable } from '../entites/file.entity';
 
 // dtos
 import { BasePaginationDto } from '../dto/base-pagination.dto';
+import { BaseFileUploadDto } from '../dto/base-file-upload.dto';
 
 // consts
 import { FILTER_MAPPER } from '../consts/filter-mapper.const';
-import { BaseFileUploadDto } from '../dto/base-file-upload.dto';
+import { AwsService } from 'src/aws/service/aws.service';
 
 @Injectable()
 export class CommonService {
   constructor(
     @InjectRepository(FileTable)
-    private readonly fileRepository: Repository<FileTable>
+    private readonly fileRepository: Repository<FileTable>,
+    private readonly awsService: AwsService
   ) {}
 
   getRepository(qr?: QueryRunner) {
@@ -122,42 +124,62 @@ export class CommonService {
 
   async uploadFile(
     userId: string,
-    postId: string,
+    type: { id: string; type: 'post' | 'banner' },
     file: Express.Multer.File & BaseFileUploadDto,
     qr?: QueryRunner
   ) {
     const repository = this.getRepository(qr);
-
-    console.log('== uploadFile : file == : ', file);
-
-    const folder = file.key.split('/')[0];
-    const filename = file.key.split('/')[1];
+    const resUpload = await this.awsService.uploadFileToS3(file);
 
     const upload = repository.create({
       originalname: file.originalname,
-      filename: filename,
+      filename: file.originalname,
       encoding: file.encoding,
       mimetype: file.mimetype,
       size: file.size,
-      bucket: file.bucket,
-      key: file.key,
-      folder: folder,
-      location: file.location,
-      contentType: file.contentType,
+      bucket: resUpload.bucket,
+      key: resUpload.key,
+      folder: resUpload.folderName.replace('/', ''),
+      location: resUpload.location,
       sequence: file.sequence,
       author: {
         id: userId
       },
-      post: {
-        id: postId
+      [type.type]: {
+        id: type.id
       }
     });
 
-    const result = await repository.save(upload);
+    await repository.save(upload);
 
     return {
-      ...result,
+      ...upload,
       message: '파일 업로드에 성공했습니다.'
+    };
+  }
+
+  async deleteFile(userId: string, fileIds: string, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
+
+    const ids = fileIds.split(',');
+
+    for (let i = 0; i < ids.length; i++) {
+      const file = await repository.findOne({
+        where: {
+          id: ids[i]
+        }
+      });
+
+      if (!file) {
+        throw new BadRequestException('파일이 존재하지 않습니다.');
+      }
+
+      await this.awsService.deleteFileFromS3(file.key);
+      await repository.remove(file);
+    }
+
+    return {
+      message: '파일 삭제에 성공했습니다.'
     };
   }
 }

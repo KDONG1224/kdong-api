@@ -49,6 +49,9 @@ import {
   ENV_DB_PORT_KEY,
   ENV_DB_USERNAME_KEY
 } from './common/consts/env-keys.const';
+import { BannersModule } from './banners/module/banners.module';
+import { BannersTable } from './banners/entity/banners.entity';
+import { AwsModule } from './aws/module/aws.module';
 
 @Module({
   imports: [
@@ -70,7 +73,8 @@ import {
         QnaTable,
         TagsTable,
         FileTable,
-        CategoriesTable
+        CategoriesTable,
+        BannersTable
       ],
       synchronize: true
     }),
@@ -81,7 +85,9 @@ import {
     NoticeModule,
     QnaModule,
     TagsModule,
-    CategoriesModule
+    CategoriesModule,
+    BannersModule,
+    AwsModule
   ],
   controllers: [AppController],
   providers: [

@@ -12,7 +12,7 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { Between, QueryRunner as QR } from 'typeorm';
+import { QueryRunner as QR } from 'typeorm';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 // services
@@ -115,7 +115,7 @@ export class PostsController {
     for (let i = 0; i < thumbnails.length; i++) {
       await this.commonService.uploadFile(
         id,
-        post.id,
+        { id: post.id, type: 'post' },
         { ...thumbnails[i], sequence: i + 1 },
         qr
       );
