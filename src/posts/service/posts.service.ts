@@ -216,21 +216,49 @@ export class PostsService {
     return result;
   }
 
-  async exposePost(id: string) {
+  async exposePost(id: string, body: { expose: boolean }) {
     const post = await this.postsRepository.findOne({ where: { id } });
 
     if (!post) {
       throw new NotFoundException('해당하는 포스트가 없습니다.');
     }
 
-    await this.postsRepository.update({ id }, { expose: !post.expose });
+    await this.postsRepository.update({ id }, { expose: body.expose });
 
     return {
       result: {
         ...post,
-        expose: !post.expose
+        expose: body.expose
       },
-      message: `게시글이 ${!post.expose ? '노출' : '숨김'} 처리되었습니다.`
+      message: `게시글이 ${body.expose ? '노출' : '숨김'} 처리되었습니다.`
+    };
+  }
+
+  async mainExposePost(id: string, body: { mainExpose: boolean }) {
+    if (body.mainExpose) {
+      const allPosts = await this.postsRepository.find({
+        where: { mainExpose: true }
+      });
+
+      if (allPosts.length >= 10) {
+        throw new NotFoundException('메인 노출은 최대 10개까지 가능합니다.');
+      }
+    }
+
+    const post = await this.postsRepository.findOne({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('해당하는 포스트가 없습니다.');
+    }
+
+    await this.postsRepository.update({ id }, { mainExpose: body.mainExpose });
+
+    return {
+      result: {
+        ...post,
+        mainExpose: body.mainExpose
+      },
+      message: `게시글이 ${body.mainExpose ? '노출' : '숨김'} 처리되었습니다.`
     };
   }
 

@@ -182,8 +182,19 @@ export class PostsController {
   }
 
   @Post('/expose/:id')
+  @Roles(RolesEnum.ADMIN)
   @ApiOperation({ summary: '게시글 노출' })
-  postExposePost(@Param('id') id: string) {
-    return this.postsService.exposePost(id);
+  postExposePost(@Param('id') id: string, @Body() body: { expose: boolean }) {
+    return this.postsService.exposePost(id, body);
+  }
+
+  @Post('/expose/main/:id')
+  @Roles(RolesEnum.ADMIN)
+  @ApiOperation({ summary: '게시글 메인 노출' })
+  postMainExposePost(
+    @Param('id') id: string,
+    @Body() body: { mainExpose: boolean }
+  ) {
+    return this.postsService.mainExposePost(id, body);
   }
 }

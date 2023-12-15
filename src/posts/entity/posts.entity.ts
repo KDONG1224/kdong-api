@@ -36,6 +36,17 @@ export class PostsTable extends BaseTable {
   })
   @IsBoolean()
   @ApiProperty({
+    description: '게시글 메인 노출여부',
+    default: false,
+    required: false
+  })
+  mainExpose: boolean;
+
+  @Column({
+    default: false
+  })
+  @IsBoolean()
+  @ApiProperty({
     description: '게시글 노출여부',
     default: false,
     required: false
