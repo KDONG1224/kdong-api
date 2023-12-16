@@ -36,4 +36,12 @@ export class UpdatePostsDto extends PartialType(CreatePostsDto) {
   @Type(() => Array<Express.Multer.File & BaseFileUploadDto>)
   @IsOptional()
   thumbnails?: Array<Express.Multer.File & BaseFileUploadDto>;
+
+  @IsString()
+  @IsOptional()
+  hasThumbIds?: string;
+
+  @IsString()
+  @IsOptional()
+  hasTagIds?: string;
 }

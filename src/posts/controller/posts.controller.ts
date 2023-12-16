@@ -4,10 +4,12 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
   Query,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors
@@ -45,6 +47,9 @@ import { TagsService } from 'src/tags/service/tags.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CommonService } from 'src/common/service/common.service';
 import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
+import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
+
+import { AdminUserGuard } from 'src/common/guard/admin-user.guard';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -79,15 +84,20 @@ export class PostsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '특정 게시글 가져오기' })
   @IsPublic()
-  getPostById(@Param('id') id: string) {
-    return this.postsService.getPostById(id);
+  @UseGuards(AdminUserGuard)
+  @ApiOperation({ summary: '특정 게시글 가져오기' })
+  getPostById(
+    @Req() req: Express.Request & { isAdmin: boolean },
+    @Param('id') id: string
+  ) {
+    return this.postsService.getPostById(id, req.isAdmin);
   }
 
   @Post()
   @Roles(RolesEnum.ADMIN)
   @UseInterceptors(TransactionInterceptor)
+  @FileUploadDto(['thumbnails'])
   @UseInterceptors(FilesInterceptor('thumbnails'))
   @ApiOperation({ summary: '게시글 생성' })
   async postPosts(
@@ -98,14 +108,12 @@ export class PostsController {
   ) {
     const post = await this.postsService.createPosts(id, body);
 
-    console.log('== thumbnails == : ', thumbnails);
-
     const tags = body.tags.split(',');
 
     for (let i = 0; i < tags.length; i++) {
       await this.tagsSerivce.createTag(
         {
-          post,
+          postId: post.id,
           tag: tags[i]
         },
         qr
@@ -127,43 +135,47 @@ export class PostsController {
   @Patch(':id')
   @Roles(RolesEnum.ADMIN)
   @UseInterceptors(TransactionInterceptor)
+  @FileUploadDto(['thumbnails'])
   @UseInterceptors(FilesInterceptor('thumbnails'))
   @UseGuards(IsPostMineOrAdminGuard)
   @ApiOperation({ summary: '게시글 수정' })
   async patchPosts(
-    @Param('id') id: string,
     @User() user: UsersTable,
+    @Param('id') id: string,
     @UploadedFiles() thumbnails: Array<Express.Multer.File & BaseFileUploadDto>,
     @Body() body: UpdatePostsDto,
     @QueryRunner() qr: QR
   ) {
-    console.log('== id, body == : ', id, body);
-    console.log('== thumbnails == : ', thumbnails);
-
     const update = await this.postsService.updatePosts(id, body);
 
-    // const tags = body.tags.split(',');
+    if (body.hasThumbIds) {
+      await this.commonService.deleteFile(user.id, body.hasThumbIds, qr);
+    }
 
-    // for (let i = 0; i < tags.length; i++) {
-    //   await this.tagsSerivce.createTag(
-    //     {
-    //       update,
-    //       tag: tags[i]
-    //     },
-    //     qr
-    //   );
-    // }
+    if (body.hasTagIds) {
+      await this.tagsSerivce.deleteTag(body.hasTagIds, qr);
+    }
 
-    // for (let i = 0; i < thumbnails.length; i++) {
-    //   await this.commonService.uploadFile(
-    //     user.id,
-    //     id,
-    //     { ...thumbnails[i], sequence: i + 1 },
-    //     qr
-    //   );
-    // }
+    const tags = body.tags.split(',');
 
-    console.log('== updatePost == : ', update);
+    for (let i = 0; i < tags.length; i++) {
+      await this.tagsSerivce.createTag(
+        {
+          postId: update.id,
+          tag: tags[i]
+        },
+        qr
+      );
+    }
+
+    for (let i = 0; i < thumbnails.length; i++) {
+      await this.commonService.uploadFile(
+        user.id,
+        { id, type: 'post' },
+        { ...thumbnails[i], sequence: i + 1 },
+        qr
+      );
+    }
 
     return update;
   }

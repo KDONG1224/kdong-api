@@ -87,7 +87,7 @@ export class PostsService {
     }
   }
 
-  async getPostById(id: string) {
+  async getPostById(id: string, isAdmin?: boolean) {
     const post = await this.postsRepository.findOne({
       ...DEFAULT_POST_FIND_OPTIONS,
       where: { id }
@@ -97,9 +97,11 @@ export class PostsService {
       throw new NotFoundException('해당하는 포스트가 없습니다.');
     }
 
-    const readCount = post.readCount + 1;
+    const readCount = !isAdmin ? post.readCount + 1 : post.readCount;
 
-    await this.postsRepository.update({ id }, { readCount });
+    if (!isAdmin) {
+      await this.postsRepository.update({ id }, { readCount });
+    }
 
     return {
       ...post,
@@ -123,9 +125,9 @@ export class PostsService {
       commentCount: 0
     });
 
-    await this.postsRepository.save(newPost);
+    const save = await this.postsRepository.save(newPost);
 
-    return { ...newPost, message: '게시글이 생성되었습니다.' };
+    return { ...save, message: '게시글이 생성되었습니다.' };
   }
 
   async generatePosts(userId: string) {
@@ -164,8 +166,10 @@ export class PostsService {
 
     await this.postsRepository.save(data);
 
+    const result = await this.getPostById(data.id, true);
+
     return {
-      ...data,
+      ...result,
       message: '게시글이 수정되었습니다.'
     };
   }

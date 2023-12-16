@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { QueryRunner, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannersTable } from '../entity/banners.entity';
 import { CreateBannerDto } from '../dto/create-banner.dto';
@@ -49,8 +49,6 @@ export class BannersService {
       throw new BadRequestException('배너가 존재하지 않습니다.');
     }
 
-    console.log('== banner == : ', banner);
-
     const data = {
       ...banner,
       ...dto,
@@ -60,8 +58,6 @@ export class BannersService {
     await this.bannersRepository.save(data);
 
     const { bannerLists } = await this.getBannerLists();
-
-    console.log('== bannerLists == : ', bannerLists);
 
     return {
       bannerLists,

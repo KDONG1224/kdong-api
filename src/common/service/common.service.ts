@@ -175,24 +175,26 @@ export class CommonService {
     };
   }
 
-  async deleteFile(userId: string, fileIds: string, qr?: QueryRunner) {
+  async deleteFile(userId: string, fileIds?: string, qr?: QueryRunner) {
     const repository = this.getRepository(qr);
 
-    const ids = fileIds.split(',');
+    if (fileIds) {
+      const ids = fileIds.split(',');
 
-    for (let i = 0; i < ids.length; i++) {
-      const file = await repository.findOne({
-        where: {
-          id: ids[i]
+      for (let i = 0; i < ids.length; i++) {
+        const file = await repository.findOne({
+          where: {
+            id: ids[i]
+          }
+        });
+
+        if (!file) {
+          throw new BadRequestException('파일이 존재하지 않습니다.');
         }
-      });
 
-      if (!file) {
-        throw new BadRequestException('파일이 존재하지 않습니다.');
+        await this.awsService.deleteFileFromS3(file.key);
+        await repository.remove(file);
       }
-
-      await this.awsService.deleteFileFromS3(file.key);
-      await repository.remove(file);
     }
 
     return {

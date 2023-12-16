@@ -9,10 +9,15 @@ import { UsersTable } from 'src/users/entity/users.entity';
 
 // dtos
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { UpdateCategoryDto } from '../dto/update-category.dto';
 
 // decorators
 import { User } from 'src/users/decorator/user.decorator';
-import { UpdateCategoryDto } from '../dto/update-category.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { Roles } from 'src/users/decorator/roles.decorator';
+
+// consts
+import { RolesEnum } from 'src/users/consts/roles.const';
 
 @Controller('categories')
 export class CategoriesController {
@@ -32,16 +37,19 @@ export class CategoriesController {
   }
 
   @Get('/sub')
+  @IsPublic()
   async getAllSubCategories() {
     return await this.categoriesService.getAllSubCategories();
   }
 
   @Get('/sub/:id')
+  @IsPublic()
   async getSubCategories(@Param('id') id: string) {
     return await this.categoriesService.getSubCategories(id);
   }
 
   @Patch(':id')
+  @Roles(RolesEnum.ADMIN)
   async updateCategory(
     @Param('id') id: string,
     @Body() body: UpdateCategoryDto

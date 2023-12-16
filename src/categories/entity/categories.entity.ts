@@ -15,6 +15,13 @@ export class CategoriesTable extends BaseTable {
   @IsString()
   categoryName: string;
 
+  @Column({
+    default: null,
+    nullable: true
+  })
+  @IsString()
+  categoryEngName?: string;
+
   @Column()
   @IsNumber()
   categoryNumber: number;
