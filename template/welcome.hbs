@@ -1,0 +1,190 @@
+<html lang='ko'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>KDONG Wanted Mail</title>
+  </head>
+
+  <body>
+    <div
+      style='
+        background-color: #e5e5e5;
+        width: 100%;
+        text-align: center;
+        padding-top: 60px;
+        padding-bottom: 60px;
+      '
+    >
+      <table
+        style="
+          background-color: #fff;
+          padding: 35px;
+          width: 605px;
+          margin: 0 auto;
+          text-align: left;
+          font-family: 'Malgun Gothic', Dotum, Helvetica, 'Apple SD Gothic Neo',
+            Sans-serif;
+          font-size: 14px;
+          color: #444;
+        "
+        cellpadding='0'
+        cellspacing='0'
+      >
+        <thead>
+          <tr>
+            <td
+              style='
+                text-align: left;
+                border-bottom: 2px solid #0d223e;
+                vertical-align: middle;
+                height: 45px;
+              '
+            >
+              <a href='https://kdong.dev' target='blank'><img
+                  src='https://kdong.s3.ap-northeast-2.amazonaws.com/img_mailing_logo.png'
+                  alt='KDONG BLOG'
+                /></a>
+            </td>
+
+            <td
+              style='
+                text-align: right;
+                border-bottom: 2px solid #0d223e;
+                vertical-align: middle;
+                font-size: 12px;
+              '
+            >
+              <a
+                href='https://kdong.dev'
+                target='blank'
+                style='text-decoration: none; color: #0f2c65'
+              >kdong.dev</a>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan='2' style='padding: 60px 0 60px 0'>
+              <img
+                src='https://kdong.s3.ap-northeast-2.amazonaws.com/img_mailing01.png'
+                alt='KDONG Blog Wanted 메일 입니다.'
+              />
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2'>
+              안녕하세요.
+              {{name}}
+              님!<br />
+              KDONG Blog를 방문해주셔서 감사합니다.<br />
+              아래
+              <span style='color: #f43f00'>링크</span>를 클릭하여 노션 이력서
+              링크로 이등해주세요.
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' style='height: 20px'></td>
+          </tr>
+          <tr>
+            <td colspan='2'>
+              <table cellpadding='0' cellspacing='0' style='width: 100%'>
+                <tr>
+                  <th
+                    style='
+                      border-top: 1px solid #666;
+                      border-bottom: 1px solid #ddd;
+                      background-color: #f8f8f8;
+                      height: 50px;
+                      width: 40%;
+                      padding-left: 20px;
+                    '
+                  >
+                    노션 링크
+                  </th>
+                  <td
+                    style='
+                      font-weight: bold;
+                      color: #f43f00;
+                      border-top: 1px solid #666;
+                      border-bottom: 1px solid #ddd;
+                      padding-left: 20px;
+                    '
+                  >
+                    <a
+                      style='color: #f43f00'
+                      href={{notionLink}}
+                    >{{notionLink}}</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' style='height: 50px'></td>
+          </tr>
+          <tr>
+            <td colspan='2' style='text-align: center'>
+              <a href='https://kdong.dev' target='blank'><img
+                  src='https://kdong.s3.ap-northeast-2.amazonaws.com/btn_hompage.png'
+                  alt='KDONG BLOG 이동'
+                  style='border: none'
+                /></a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' style='height: 50px'></td>
+          </tr>
+          <tr>
+            <td
+              colspan='2'
+              style='
+                padding: 25px;
+                color: #666666;
+                background-color: #f8f8f8;
+                border-bottom: 1px solid #ddd;
+                font-size: 13px;
+              '
+            >
+              본 메일은 발신전용 메일이므로, 회신을 통한 문의는 처리되지
+              않습니다.<br />
+              문의사항은
+              <a
+                href='https://noyclah.notion.site/ad709f3f88b64cbb87672246749713f0?pvs=4'
+                target='blank'
+                style='color: #222222; text-decoration: underline'
+              >CONTACT US</a>를 이용해주세요.
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan='2'
+              style='
+                padding: 25px;
+                color: #666666;
+                background-color: #f8f8f8;
+                font-size: 13px;
+              '
+            >
+              KDONG Blog 대표 강동재<br />
+              경기도 안산시 거주중<br />
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan='2'
+              style='
+                padding: 0 0 25px 25px;
+                color: #666666;
+                background-color: #f8f8f8;
+                font-size: 13px;
+              '
+            >
+              Copyright
+              <span style='font-weight: bold'>KDONG</span>. All Rights Reserved.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
