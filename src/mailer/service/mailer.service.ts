@@ -24,7 +24,7 @@ export class MailerService {
     const result = await this.mailerRepository.find();
 
     return {
-      ...result,
+      wantedLists: result,
       message: '메일 리스트 조회 성공'
     };
   }
