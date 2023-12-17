@@ -126,6 +126,12 @@ export class CommonService {
       const [_, field] = split;
 
       where[field] = value;
+    } else if (split.length === 3) {
+      const [_, field, key] = split;
+
+      where[field] = {
+        [key]: value
+      };
     } else {
       const [_, field, operator] = split;
 

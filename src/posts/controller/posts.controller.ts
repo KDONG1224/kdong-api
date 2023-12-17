@@ -66,7 +66,7 @@ export class PostsController {
   @IsPublic()
   async getAllPosts(@Query() query: PaginatePostsDto) {
     if (!query.order__createdAt) {
-      query.order__createdAt = 'ASC';
+      query.order__createdAt = 'DESC';
     }
 
     if (!query.take) {

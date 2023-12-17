@@ -17,4 +17,8 @@ export class PaginatePostsDto extends BasePaginationDto {
   @IsString()
   @IsOptional()
   'where__category'?: string;
+
+  @IsString()
+  @IsOptional()
+  'where__category__id'?: string;
 }

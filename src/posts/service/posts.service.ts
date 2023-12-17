@@ -36,10 +36,12 @@ export class PostsService {
         email: post.author.email,
         role: post.author.role
       },
-      tags: post.tags.map((item) => ({
-        id: item.id,
-        name: item.tag
-      })),
+      tags: post.tags
+        .sort((a, b) => Number(a.createdAt) - Number(b.createdAt))
+        .map((item) => ({
+          id: item.id,
+          name: item.tag
+        })),
       thumbnails: post.thumbnails.map((item) => ({
         id: item.id,
         location: item.location,
@@ -105,6 +107,30 @@ export class PostsService {
 
     return {
       ...post,
+      author: {
+        username: post.author.username,
+        email: post.author.email,
+        role: post.author.role
+      },
+      tags: post.tags
+        .sort((a, b) => Number(a.createdAt) - Number(b.createdAt))
+        .map((item) => ({
+          id: item.id,
+          name: item.tag
+        })),
+      thumbnails: post.thumbnails.map((item) => ({
+        id: item.id,
+        location: item.location,
+        originalname: item.originalname,
+        mimetype: item.mimetype,
+        size: item.size
+      })),
+      category: {
+        id: post.category && post.category.id,
+        categoryName: post.category && post.category.categoryName,
+        categoryNumber: post.category && post.category.categoryNumber,
+        subCategoryNumber: post.category && post.category.subCategoryNumber
+      },
       readCount
     };
   }
