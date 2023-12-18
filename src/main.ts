@@ -1,6 +1,6 @@
 // base
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { HttpException, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 
 // modules
@@ -33,9 +33,22 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
+  /**
+   * CORS 설정
+   */
   app.enableCors({
     origin: (origin, callback) => {
-      callback(null, true);
+      if (origin) {
+        const whiteList = process.env.REQUEST_URL_WHITE_LIST.split(',');
+
+        if (whiteList.indexOf(origin) !== -1) {
+          callback(null, true);
+        } else {
+          callback(new HttpException('Not Allowed By CORS', 400));
+        }
+      } else {
+        callback(null, true);
+      }
     },
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
     credentials: true
@@ -45,7 +58,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swagerConfig);
   SwaggerModule.setup('v1/api', app, document);
 
-  console.log('http://localhost:24189');
+  console.log('http://localhost:24181');
 
   await app.listen(process.env.PORT || 24181);
 }
