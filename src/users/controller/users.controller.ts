@@ -5,16 +5,12 @@ import { ApiTags } from '@nestjs/swagger';
 // services
 import { UsersService } from '../service/users.service';
 
-// decorators
-import { IsPublic } from 'src/common/decorator/is-public.decorator';
-
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @IsPublic()
   getAllUsers() {
     return this.usersService.getAllUsers();
   }

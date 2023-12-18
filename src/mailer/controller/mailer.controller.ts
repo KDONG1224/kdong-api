@@ -6,10 +6,14 @@ import { MailerService } from '../service/mailer.service';
 
 // dto
 import { CreateMailerDto } from '../dto/create-mailer.dto';
+import { SendMailerDto } from '../dto/send-mailer.dto';
 
 // decorator
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
-import { SendMailerDto } from '../dto/send-mailer.dto';
+import { Roles } from 'src/users/decorator/roles.decorator';
+
+// consts
+import { RolesEnum } from 'src/users/consts/roles.const';
 
 @Controller('mailer')
 export class MailerController {
@@ -27,6 +31,7 @@ export class MailerController {
   }
 
   @Post('send')
+  @Roles(RolesEnum.ADMIN)
   async sendMail(@Body() body: SendMailerDto) {
     return await this.mailerService.sendMail(body);
   }

@@ -75,12 +75,12 @@ export class PostsController {
     return await this.postsService.getAllPosts(query);
   }
 
-  @Post('dummy')
-  @Roles(RolesEnum.ADMIN)
-  @ApiOperation({ summary: '더미 게시글 생성' })
-  async postDummyPosts(@User() user: UsersTable) {
-    return await this.postsService.generatePosts(user.id);
-  }
+  // @Post('dummy')
+  // @Roles(RolesEnum.ADMIN)
+  // @ApiOperation({ summary: '더미 게시글 생성' })
+  // async postDummyPosts(@User() user: UsersTable) {
+  //   return await this.postsService.generatePosts(user.id);
+  // }
 
   @Get(':id')
   @IsPublic()

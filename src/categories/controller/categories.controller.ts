@@ -24,6 +24,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @Roles(RolesEnum.ADMIN)
   async createCategory(
     @User() user: UsersTable,
     @Body() body: CreateCategoryDto

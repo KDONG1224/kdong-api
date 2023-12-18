@@ -105,8 +105,8 @@ export class BannersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: '배너 삭제하기' })
   @Roles(RolesEnum.ADMIN)
+  @ApiOperation({ summary: '배너 삭제하기' })
   async deleteBanner(@Param('id') id: string) {
     return await this.bannersService.deleteBanner(id);
   }
