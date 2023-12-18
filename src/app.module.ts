@@ -56,6 +56,7 @@ import { FaqsModule } from './faqs/module/faqs.module';
 import { FaqsTable } from './faqs/entity/faqs.entity';
 import { MailerModule } from './mailer/module/mailer.module';
 import { MailerTable } from './mailer/entity/mailer.entity';
+import { GuestbooksModule } from './guestbooks/module/guestbooks.module';
 
 @Module({
   imports: [
@@ -95,7 +96,8 @@ import { MailerTable } from './mailer/entity/mailer.entity';
     BannersModule,
     AwsModule,
     FaqsModule,
-    MailerModule
+    MailerModule,
+    GuestbooksModule
   ],
   controllers: [AppController],
   providers: [
