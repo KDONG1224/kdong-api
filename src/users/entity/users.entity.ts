@@ -13,6 +13,7 @@ import { Exclude } from 'class-transformer';
 // entites
 import { BaseTable } from 'src/common/entites/base.entity';
 import { PostsTable } from 'src/posts/entity/posts.entity';
+import { FileTable } from 'src/common/entites/file.entity';
 
 // consts
 import { RolesEnum } from '../consts/roles.const';
@@ -21,7 +22,6 @@ import { RolesEnum } from '../consts/roles.const';
 import { emailValidationMessage } from 'src/common/validation-message/email-validator.message';
 import { legthValidationMessage } from 'src/common/validation-message/legth-validation.message';
 import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
-import { FileTable } from 'src/common/entites/file.entity';
 
 @Entity()
 export class UsersTable extends BaseTable {
@@ -35,12 +35,9 @@ export class UsersTable extends BaseTable {
   @IsString({
     message: stringValidationMessage
   })
-  @Length(1, 20, {
-    message: legthValidationMessage
-  })
   username: string;
 
-  @Column({ unique: true })
+  @Column()
   @IsString({
     message: stringValidationMessage
   })

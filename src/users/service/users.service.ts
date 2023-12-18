@@ -33,6 +33,8 @@ export class UsersService {
   }
 
   async createUser(user: CreateUserDto) {
+    console.log('== user == : ', user);
+
     // 유저네임 중복 체크
     const isExistUserName = await this.usersRepository.exist({
       where: { username: user.username }

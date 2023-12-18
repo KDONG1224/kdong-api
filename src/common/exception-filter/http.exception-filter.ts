@@ -13,14 +13,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
+
     const status = exception.getStatus();
+    const res = exception.getResponse();
+    const message = JSON.parse(JSON.stringify(res)).message;
 
     console.log(`[REQ] ${request.url} ${now.toLocaleString('kr')}`);
 
     response.status(status).json({
       code: status,
       isSuccess: false,
-      message: exception.message,
+      message: message,
       result: undefined
     });
   }

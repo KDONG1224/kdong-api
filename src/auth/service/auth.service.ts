@@ -131,13 +131,9 @@ export class AuthService {
       password: hash
     });
 
-    const result = {
-      code: 200,
-      isSuccess: true,
-      message: '회원가입 성공',
-      result: instanceToPlain(newUser)
+    return {
+      ...instanceToPlain(newUser),
+      message: '회원가입 성공'
     };
-
-    return result;
   }
 }
