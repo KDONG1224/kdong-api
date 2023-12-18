@@ -57,6 +57,7 @@ import { FaqsTable } from './faqs/entity/faqs.entity';
 import { MailerModule } from './mailer/module/mailer.module';
 import { MailerTable } from './mailer/entity/mailer.entity';
 import { GuestbooksModule } from './guestbooks/module/guestbooks.module';
+import { GuestbooksTable } from './guestbooks/entity/guestbooks.entity';
 
 @Module({
   imports: [
@@ -81,7 +82,8 @@ import { GuestbooksModule } from './guestbooks/module/guestbooks.module';
         CategoriesTable,
         BannersTable,
         FaqsTable,
-        MailerTable
+        MailerTable,
+        GuestbooksTable
       ],
       synchronize: true
     }),
