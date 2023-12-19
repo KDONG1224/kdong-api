@@ -147,14 +147,14 @@ export class CommonService {
 
   async uploadFile(
     userId: string,
-    type: { id: string; type: 'post' | 'banner' },
+    type: { id: string; type: 'post' | 'banner' | 'guestbook' },
     file: Express.Multer.File & BaseFileUploadDto,
     qr?: QueryRunner
   ) {
     const repository = this.getRepository(qr);
     const resUpload = await this.awsService.uploadFileToS3(file);
 
-    const upload = repository.create({
+    let data = {
       originalname: file.originalname,
       filename: file.originalname,
       encoding: file.encoding,
@@ -165,13 +165,21 @@ export class CommonService {
       folder: resUpload.folderName.replace('/', ''),
       location: resUpload.location,
       sequence: file.sequence,
-      author: {
-        id: userId
-      },
       [type.type]: {
         id: type.id
       }
-    });
+    };
+
+    if (userId && userId !== '') {
+      data = {
+        ...data,
+        author: {
+          id: userId
+        }
+      };
+    }
+
+    const upload = repository.create(data);
 
     await repository.save(upload);
 

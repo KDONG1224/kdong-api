@@ -1,21 +1,63 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFiles,
+  UseInterceptors
+} from '@nestjs/common';
+import { QueryRunner as QR } from 'typeorm';
 import { GuestbooksService } from '../service/guestbooks.service';
 import { CreateGuestbookDto } from '../dto/create-guestbook.dto';
 import { UpdateGuestbookDto } from '../dto/update-guestbook.dto';
 import { ChangeExposeGuestbookDto } from '../dto/chage-expose-guestbook.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { CommonService } from 'src/common/service/common.service';
+import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
+import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
+import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { v4 as uuid } from 'uuid';
 
 @Controller('guestbooks')
 export class GuestbooksController {
-  constructor(private readonly guestbooksService: GuestbooksService) {}
+  constructor(
+    private readonly guestbooksService: GuestbooksService,
+    private readonly commonService: CommonService
+  ) {}
 
   @Get()
+  @IsPublic()
   async getGuestbooks() {
     return await this.guestbooksService.getGuestbooks();
   }
 
   @Post()
-  async createGuestbook(@Body() body: CreateGuestbookDto) {
-    return await this.guestbooksService.createGuestbook(body);
+  @IsPublic()
+  @UseInterceptors(TransactionInterceptor)
+  @FileUploadDto(['guestbookImages'])
+  @UseInterceptors(FilesInterceptor('guestbookImages'))
+  async createGuestbook(
+    @Body() body: CreateGuestbookDto,
+    @UploadedFiles()
+    guestbookImages: Array<Express.Multer.File & BaseFileUploadDto>,
+    @QueryRunner() qr: QR
+  ) {
+    const guestbook = await this.guestbooksService.createGuestbook(body);
+
+    for (let i = 0; i < guestbookImages.length; i++) {
+      await this.commonService.uploadFile(
+        '',
+        { id: guestbook.id, type: 'guestbook' },
+        { ...guestbookImages[i], sequence: i + 1 },
+        qr
+      );
+    }
+
+    return guestbook;
   }
 
   @Patch(':id')

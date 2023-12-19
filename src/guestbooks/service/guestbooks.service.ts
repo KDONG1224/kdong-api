@@ -6,6 +6,9 @@ import { CreateGuestbookDto } from '../dto/create-guestbook.dto';
 import { UpdateGuestbookDto } from '../dto/update-guestbook.dto';
 import { ChangeExposeGuestbookDto } from '../dto/chage-expose-guestbook.dto';
 
+// libraries
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class GuestbooksService {
   constructor(
@@ -14,7 +17,11 @@ export class GuestbooksService {
   ) {}
 
   async getGuestbooks() {
-    const guestbooks = await this.guestbooksRepository.find();
+    const guestbooks = await this.guestbooksRepository.find({
+      relations: {
+        guestbookFiles: true
+      }
+    });
 
     return {
       guestbooks,
@@ -23,12 +30,14 @@ export class GuestbooksService {
   }
 
   async createGuestbook(body: CreateGuestbookDto) {
-    const guestbook = this.guestbooksRepository.create({ ...body });
+    const hash = await bcrypt.hash(body.guestPassword, 10);
 
-    await this.guestbooksRepository.save(body);
+    this.guestbooksRepository.create({ ...body, guestPassword: hash });
+
+    const save = await this.guestbooksRepository.save(body);
 
     return {
-      guestbook,
+      ...save,
       message: '방명록 생성 성공'
     };
   }
