@@ -8,25 +8,32 @@ import { ChangeExposeGuestbookDto } from '../dto/chage-expose-guestbook.dto';
 
 // libraries
 import * as bcrypt from 'bcrypt';
+import { PaginateGuestbookDto } from '../dto/paginate-guestbook.dto';
+import { CommonService } from 'src/common/service/common.service';
 
 @Injectable()
 export class GuestbooksService {
   constructor(
     @InjectRepository(GuestbooksTable)
-    private readonly guestbooksRepository: Repository<GuestbooksTable>
+    private readonly guestbooksRepository: Repository<GuestbooksTable>,
+    private readonly commonService: CommonService
   ) {}
 
-  async getGuestbooks() {
-    const guestbooks = await this.guestbooksRepository.find({
+  async getGuestbooks(query: PaginateGuestbookDto) {
+    const result = await this.pagePaginatePosts(query);
+
+    return {
+      guestbooks: result.data,
+      message: '방명록 조회 성공'
+    };
+  }
+
+  async pagePaginatePosts(dto: PaginateGuestbookDto) {
+    return await this.commonService.paginate(dto, this.guestbooksRepository, {
       relations: {
         guestbookFiles: true
       }
     });
-
-    return {
-      guestbooks,
-      message: '방명록 조회 성공'
-    };
   }
 
   async createGuestbook(body: CreateGuestbookDto) {

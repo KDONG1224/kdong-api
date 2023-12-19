@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
@@ -20,7 +21,8 @@ import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
-import { v4 as uuid } from 'uuid';
+import { query } from 'express';
+import { PaginateGuestbookDto } from '../dto/paginate-guestbook.dto';
 
 @Controller('guestbooks')
 export class GuestbooksController {
@@ -31,8 +33,16 @@ export class GuestbooksController {
 
   @Get()
   @IsPublic()
-  async getGuestbooks() {
-    return await this.guestbooksService.getGuestbooks();
+  async getGuestbooks(@Query() query: PaginateGuestbookDto) {
+    if (!query.order__createdAt) {
+      query.order__createdAt = 'DESC';
+    }
+
+    if (!query.take) {
+      query.take = 20;
+    }
+
+    return await this.guestbooksService.getGuestbooks(query);
   }
 
   @Post()
