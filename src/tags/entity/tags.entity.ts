@@ -1,7 +1,7 @@
 // base
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 // entites
 import { BaseTable } from 'src/common/entites/base.entity';
@@ -17,4 +17,11 @@ export class TagsTable extends BaseTable {
   @IsString()
   @ApiProperty({ description: '태그에 연결된 게시글' })
   tag: string;
+
+  @Column({
+    default: 1
+  })
+  @IsNumber()
+  @IsOptional()
+  sequence?: number;
 }

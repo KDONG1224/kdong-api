@@ -113,7 +113,8 @@ export class PostsController {
       await this.tagsSerivce.createTag(
         {
           postId: post.id,
-          tag: tags[i]
+          tag: tags[i],
+          sequence: i + 1
         },
         qr
       );

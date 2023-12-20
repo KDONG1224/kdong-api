@@ -22,7 +22,8 @@ export class TagsService {
 
     const newTag = repository.create({
       post: { id: data.postId },
-      tag: data.tag
+      tag: data.tag,
+      sequence: data.sequence
     });
 
     await repository.save(newTag);
