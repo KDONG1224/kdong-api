@@ -32,7 +32,7 @@ export class PostsTable extends BaseTable {
   category?: CategoriesTable;
 
   @Column({
-    default: false
+    default: true
   })
   @IsBoolean()
   @ApiProperty({
@@ -43,7 +43,7 @@ export class PostsTable extends BaseTable {
   mainExpose: boolean;
 
   @Column({
-    default: false
+    default: true
   })
   @IsBoolean()
   @ApiProperty({

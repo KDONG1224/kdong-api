@@ -85,5 +85,6 @@ export class UsersTable extends BaseTable {
   articles: PostsTable[];
 
   @OneToMany(() => FileTable, (file) => file.author, { eager: true })
+  @Exclude({ toPlainOnly: true })
   files: FileTable[];
 }

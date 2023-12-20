@@ -137,6 +137,25 @@ export class PostsService {
     };
   }
 
+  async getRecommendPosts() {
+    const posts = await this.postsRepository.find({
+      ...DEFAULT_POST_FIND_OPTIONS,
+      where: { expose: true, mainExpose: true },
+      order: { readCount: 'DESC' }
+    });
+
+    if (posts.length < 1) {
+      throw new NotFoundException('해당하는 게시글이 없습니다.');
+    }
+
+    const result = posts.slice(0, 10);
+
+    return {
+      recommendLists: result,
+      message: '추천 게시글을 가져왔습니다.'
+    };
+  }
+
   async createPosts(id: string, post: CreatePostsDto) {
     const newPost = this.postsRepository.create({
       author: {

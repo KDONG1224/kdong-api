@@ -60,16 +60,26 @@ export class PostsController {
   ) {}
 
   @Get()
+  @IsPublic()
+  @UseGuards(AdminUserGuard)
   @ApiOperation({ summary: '모든 게시글 가져오기' })
   @ApiOkResponse({ description: '모든 게시글 가져온다.', type: [PostsTable] })
-  @IsPublic()
-  async getAllPosts(@Query() query: PaginatePostsDto) {
+  async getAllPosts(
+    @Req() req: Express.Request & { isAdmin: boolean },
+    @Query() query: PaginatePostsDto
+  ) {
     if (!query.order__createdAt) {
       query.order__createdAt = 'DESC';
     }
 
     if (!query.take) {
       query.take = 20;
+    }
+
+    if (!req.isAdmin) {
+      query.where__expose = true;
+    } else {
+      delete query.where__expose;
     }
 
     return await this.postsService.getAllPosts(query);
@@ -92,6 +102,21 @@ export class PostsController {
   ) {
     return this.postsService.getPostById(id, req.isAdmin);
   }
+
+  @Post('recommend')
+  @IsPublic()
+  @UseGuards(AdminUserGuard)
+  @ApiOperation({ summary: '추천 게시글 가져오기' })
+  async getRecommendPosts() {
+    return await this.postsService.getRecommendPosts();
+  }
+
+  // @Get('recommend')
+  // @IsPublic()
+  // @ApiOperation({ summary: '추천 게시글 가져오기' })
+  // async getRecommendPosts() {
+  //   return await this.postsService.getRecommendPosts();
+  // }
 
   @Post()
   @Roles(RolesEnum.ADMIN)
