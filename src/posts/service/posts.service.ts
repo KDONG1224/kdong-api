@@ -37,10 +37,11 @@ export class PostsService {
         role: post.author.role
       },
       tags: post.tags
-        .sort((a, b) => Number(a.createdAt) - Number(b.createdAt))
+        .sort((a, b) => a.sequence - b.sequence)
         .map((item) => ({
           id: item.id,
-          name: item.tag
+          name: item.tag,
+          sequence: item.sequence
         })),
       thumbnails: post.thumbnails.map((item) => ({
         id: item.id,
@@ -113,10 +114,11 @@ export class PostsService {
         role: post.author.role
       },
       tags: post.tags
-        .sort((a, b) => Number(a.createdAt) - Number(b.createdAt))
+        .sort((a, b) => a.sequence - b.sequence)
         .map((item) => ({
           id: item.id,
-          name: item.tag
+          name: item.tag,
+          sequence: item.sequence
         })),
       thumbnails: post.thumbnails.map((item) => ({
         id: item.id,
