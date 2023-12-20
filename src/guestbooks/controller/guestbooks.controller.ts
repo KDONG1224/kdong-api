@@ -21,7 +21,6 @@ import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
-import { query } from 'express';
 import { PaginateGuestbookDto } from '../dto/paginate-guestbook.dto';
 
 @Controller('guestbooks')
@@ -39,7 +38,7 @@ export class GuestbooksController {
     }
 
     if (!query.take) {
-      query.take = 20;
+      query.take = 6;
     }
 
     return await this.guestbooksService.getGuestbooks(query);

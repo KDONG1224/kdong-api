@@ -24,6 +24,7 @@ export class GuestbooksService {
 
     return {
       guestbooks: result.data,
+      totalElements: result.total,
       message: '방명록 조회 성공'
     };
   }
