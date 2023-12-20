@@ -84,14 +84,19 @@ export class AwsService {
 
   async getS3Object(fileKey: string) {
     try {
-      const object = await this.s3Client.send(
-        new GetObjectCommand({
-          Bucket: this.bucketName,
-          Key: fileKey
-        })
-      );
+      const object = await this.s3Client
+        .send(
+          new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key: 'dev/' + fileKey
+          })
+        )
+        .then((response) => response.Body.transformToString());
 
-      return object;
+      return {
+        data: object,
+        message: 'success'
+      };
     } catch (e) {
       throw new BadRequestException(e.message);
     }
