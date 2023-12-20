@@ -33,6 +33,7 @@ export class CategoriesController {
   }
 
   @Get('/main')
+  @IsPublic()
   async getMainCategories() {
     return await this.categoriesService.getMainCategories();
   }
