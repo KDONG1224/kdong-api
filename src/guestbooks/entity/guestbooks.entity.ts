@@ -1,6 +1,6 @@
 // base
 import { Column, Entity, OneToMany } from 'typeorm';
-import { IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { Exclude } from 'class-transformer';
 
 // entities
@@ -25,7 +25,7 @@ export class GuestbooksTable extends BaseTable {
   @Column({
     default: true
   })
-  @IsString()
+  @IsBoolean()
   expose: boolean;
 
   @OneToMany(() => FileTable, (file) => file.guestbook)

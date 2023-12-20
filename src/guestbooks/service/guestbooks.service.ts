@@ -30,6 +30,8 @@ export class GuestbooksService {
   }
 
   async pagePaginatePosts(dto: PaginateGuestbookDto) {
+    console.log('== dto == : ', dto);
+
     return await this.commonService.paginate(dto, this.guestbooksRepository, {
       relations: {
         guestbookFiles: true
@@ -66,17 +68,25 @@ export class GuestbooksService {
     };
   }
 
-  async changeExposeGuestbook(body: ChangeExposeGuestbookDto) {
-    const exposeIds = body.exposeIds.split(',');
+  async changeExposeGuestbook(id: string, body: ChangeExposeGuestbookDto) {
+    const guestbook = await this.guestbooksRepository.findOne({
+      where: { id }
+    });
 
-    for (let i = 0; i < exposeIds.length; i++) {
-      await this.guestbooksRepository.update(exposeIds[i], {
-        expose: body.expose
-      });
+    if (!guestbook) {
+      throw new BadRequestException('존재하지 않는 방명록입니다.');
     }
 
+    await this.guestbooksRepository.update(id, { ...body });
+
+    const result = {
+      ...guestbook,
+      ...body
+    };
+
     return {
-      message: '공개 여부 변경 성공'
+      ...result,
+      message: `해당 방명록이 ${body.expose ? '노출' : '숨김'} 처리되었습니다.`
     };
   }
 }

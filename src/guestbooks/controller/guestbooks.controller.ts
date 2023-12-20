@@ -6,7 +6,9 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFiles,
+  UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { QueryRunner as QR } from 'typeorm';
@@ -22,6 +24,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
 import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { PaginateGuestbookDto } from '../dto/paginate-guestbook.dto';
+import { AdminUserGuard } from 'src/common/guard/admin-user.guard';
 
 @Controller('guestbooks')
 export class GuestbooksController {
@@ -32,13 +35,26 @@ export class GuestbooksController {
 
   @Get()
   @IsPublic()
-  async getGuestbooks(@Query() query: PaginateGuestbookDto) {
+  @UseGuards(AdminUserGuard)
+  async getGuestbooks(
+    @Req() req: Express.Request & { isAdmin: boolean },
+    @Query() query: PaginateGuestbookDto
+  ) {
     if (!query.order__createdAt) {
       query.order__createdAt = 'DESC';
     }
 
     if (!query.take) {
       query.take = 6;
+    }
+
+    console.log('== query == : ', query);
+    console.log('== req.isAdmin == : ', req.isAdmin);
+
+    if (!req.isAdmin) {
+      query.where__expose = true;
+    } else {
+      delete query.where__expose;
     }
 
     return await this.guestbooksService.getGuestbooks(query);
@@ -77,8 +93,11 @@ export class GuestbooksController {
     return await this.guestbooksService.updateGuestbook(id, body);
   }
 
-  @Patch('expose')
-  async changeExposeGuestbook(@Body() body: ChangeExposeGuestbookDto) {
-    return await this.guestbooksService.changeExposeGuestbook(body);
+  @Post('expose/:id')
+  async changeExposeGuestbook(
+    @Param('id') id: string,
+    @Body() body: ChangeExposeGuestbookDto
+  ) {
+    return await this.guestbooksService.changeExposeGuestbook(id, body);
   }
 }
