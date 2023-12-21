@@ -1,7 +1,7 @@
 // base
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository } from 'typeorm';
+import { Between, Equal, LessThan, MoreThan, Not, Repository } from 'typeorm';
 
 // services
 import { CommonService } from 'src/common/service/common.service';
@@ -100,6 +100,29 @@ export class PostsService {
       throw new NotFoundException('해당하는 포스트가 없습니다.');
     }
 
+    const prevPost = await this.postsRepository.find({
+      ...DEFAULT_POST_FIND_OPTIONS,
+      where: {
+        createdAt: LessThan(post.createdAt),
+        expose: true,
+        mainExpose: true
+      },
+      order: { createdAt: 'DESC' },
+      take: 1
+    });
+
+    const nextPost = await this.postsRepository.find({
+      ...DEFAULT_POST_FIND_OPTIONS,
+      where: {
+        createdAt: MoreThan(post.createdAt),
+        id: Not(Equal(id)),
+        expose: true,
+        mainExpose: true
+      },
+      order: { createdAt: 'ASC' },
+      take: 1
+    });
+
     const readCount = !isAdmin ? post.readCount + 1 : post.readCount;
 
     if (!isAdmin) {
@@ -107,51 +130,62 @@ export class PostsService {
     }
 
     return {
-      ...post,
-      author: {
-        username: post.author.username,
-        email: post.author.email,
-        role: post.author.role
-      },
-      tags: post.tags
-        .sort((a, b) => a.sequence - b.sequence)
-        .map((item) => ({
+      currentPost: {
+        ...post,
+        author: {
+          username: post.author.username,
+          email: post.author.email,
+          role: post.author.role
+        },
+        tags: post.tags
+          .sort((a, b) => a.sequence - b.sequence)
+          .map((item) => ({
+            id: item.id,
+            name: item.tag,
+            sequence: item.sequence
+          })),
+        thumbnails: post.thumbnails.map((item) => ({
           id: item.id,
-          name: item.tag,
-          sequence: item.sequence
+          location: item.location,
+          originalname: item.originalname,
+          mimetype: item.mimetype,
+          size: item.size
         })),
-      thumbnails: post.thumbnails.map((item) => ({
-        id: item.id,
-        location: item.location,
-        originalname: item.originalname,
-        mimetype: item.mimetype,
-        size: item.size
-      })),
-      category: {
-        id: post.category && post.category.id,
-        categoryName: post.category && post.category.categoryName,
-        categoryNumber: post.category && post.category.categoryNumber,
-        subCategoryNumber: post.category && post.category.subCategoryNumber
+        category: {
+          id: post.category && post.category.id,
+          categoryName: post.category && post.category.categoryName,
+          categoryNumber: post.category && post.category.categoryNumber,
+          subCategoryNumber: post.category && post.category.subCategoryNumber
+        },
+        readCount
       },
-      readCount
+      prevPost: prevPost[0],
+      nextPost: nextPost[0]
     };
   }
 
   async getRecommendPosts() {
-    const posts = await this.postsRepository.find({
+    const recommendLists = await this.postsRepository.find({
       ...DEFAULT_POST_FIND_OPTIONS,
       where: { expose: true, mainExpose: true },
-      order: { readCount: 'DESC' }
+      order: { readCount: 'DESC' },
+      take: 10
     });
 
-    if (posts.length < 1) {
+    const referenceLists = await this.postsRepository.find({
+      ...DEFAULT_POST_FIND_OPTIONS,
+      where: { expose: true, mainExpose: true },
+      order: { updateAt: 'DESC' },
+      take: 10
+    });
+
+    if (recommendLists.length < 1 || referenceLists.length < 1) {
       throw new NotFoundException('해당하는 게시글이 없습니다.');
     }
 
-    const result = posts.slice(0, 10);
-
     return {
-      recommendLists: result,
+      recommendLists,
+      referenceLists,
       message: '추천 게시글을 가져왔습니다.'
     };
   }

@@ -186,7 +186,7 @@ export class PostsController {
     for (let i = 0; i < tags.length; i++) {
       await this.tagsSerivce.createTag(
         {
-          postId: update.id,
+          postId: update.currentPost.id,
           tag: tags[i]
         },
         qr
