@@ -85,6 +85,12 @@ export class PostsController {
     return await this.postsService.getAllPosts(query);
   }
 
+  @Get('xml')
+  @IsPublic()
+  async getAllPostsXml() {
+    return await this.postsService.getAllPostsXml();
+  }
+
   // @Post('dummy')
   // @Roles(RolesEnum.ADMIN)
   // @ApiOperation({ summary: '더미 게시글 생성' })

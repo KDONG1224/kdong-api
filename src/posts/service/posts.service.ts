@@ -26,6 +26,18 @@ export class PostsService {
     private readonly commonService: CommonService
   ) {}
 
+  async getAllPostsXml() {
+    const articles = await this.postsRepository.find({
+      where: { expose: true, mainExpose: true },
+      order: { createdAt: 'DESC' }
+    });
+
+    return {
+      articles,
+      message: '모든 게시글을 가져왔습니다.'
+    };
+  }
+
   async getAllPosts(dto: PaginatePostsDto) {
     const result = await this.pagePaginatePosts(dto);
 
