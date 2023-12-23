@@ -196,8 +196,62 @@ export class PostsService {
     }
 
     return {
-      recommendLists,
-      referenceLists,
+      recommendLists: recommendLists.map((post) => ({
+        ...post,
+        author: {
+          username: post.author.username,
+          email: post.author.email,
+          role: post.author.role
+        },
+        tags: post.tags
+          .sort((a, b) => a.sequence - b.sequence)
+          .map((item) => ({
+            id: item.id,
+            name: item.tag,
+            sequence: item.sequence
+          })),
+        thumbnails: post.thumbnails.map((item) => ({
+          id: item.id,
+          location: item.location,
+          originalname: item.originalname,
+          mimetype: item.mimetype,
+          size: item.size
+        })),
+        category: {
+          id: post.category && post.category.id,
+          categoryName: post.category && post.category.categoryName,
+          categoryNumber: post.category && post.category.categoryNumber,
+          subCategoryNumber: post.category && post.category.subCategoryNumber
+        }
+      })),
+      referenceLists: referenceLists.map((post) => ({
+        ...post,
+        author: {
+          username: post.author.username,
+          email: post.author.email,
+          role: post.author.role
+        },
+        tags: post.tags
+          .sort((a, b) => a.sequence - b.sequence)
+          .map((item) => ({
+            id: item.id,
+            name: item.tag,
+            sequence: item.sequence
+          })),
+        thumbnails: post.thumbnails.map((item) => ({
+          id: item.id,
+          location: item.location,
+          originalname: item.originalname,
+          mimetype: item.mimetype,
+          size: item.size
+        })),
+        category: {
+          id: post.category && post.category.id,
+          categoryName: post.category && post.category.categoryName,
+          categoryNumber: post.category && post.category.categoryNumber,
+          subCategoryNumber: post.category && post.category.subCategoryNumber
+        }
+      })),
       message: '추천 게시글을 가져왔습니다.'
     };
   }
