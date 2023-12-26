@@ -9,6 +9,7 @@ import { TagsTable } from 'src/tags/entity/tags.entity';
 import { UsersTable } from 'src/users/entity/users.entity';
 import { FileTable } from 'src/common/entites/file.entity';
 import { CategoriesTable } from 'src/categories/entity/categories.entity';
+import { CommentsTable } from 'src/comments/entity/comments.entity';
 
 @Entity()
 export class PostsTable extends BaseTable {
@@ -89,6 +90,9 @@ export class PostsTable extends BaseTable {
   @Column()
   @ApiProperty({ description: '좋아요', default: 0, required: false })
   likeCount?: number;
+
+  @OneToMany(() => CommentsTable, (comment) => comment.post)
+  comments: CommentsTable[];
 
   @Column()
   @ApiProperty({ description: '댓글수', default: 0, required: false })

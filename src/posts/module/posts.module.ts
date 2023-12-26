@@ -26,6 +26,7 @@ import { TagsModule } from 'src/tags/module/tags.module';
     TagsModule
   ],
   controllers: [PostsController],
-  providers: [PostsService]
+  providers: [PostsService],
+  exports: [PostsService]
 })
 export class PostsModule {}

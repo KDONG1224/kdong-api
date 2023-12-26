@@ -1,7 +1,15 @@
 // base
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Equal, LessThan, MoreThan, Not, Repository } from 'typeorm';
+import {
+  Between,
+  Equal,
+  LessThan,
+  MoreThan,
+  Not,
+  QueryRunner,
+  Repository
+} from 'typeorm';
 
 // services
 import { CommonService } from 'src/common/service/common.service';
@@ -25,6 +33,12 @@ export class PostsService {
     private readonly postsRepository: Repository<PostsTable>,
     private readonly commonService: CommonService
   ) {}
+
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<PostsTable>(PostsTable)
+      : this.postsRepository;
+  }
 
   async getAllPostsXml() {
     const articles = await this.postsRepository.find({
@@ -413,15 +427,15 @@ export class PostsService {
     };
   }
 
-  // async incrementCommentCount(postId: number, qr?: QueryRunner) {
-  //   const repository = this.getRepository(qr);
+  async incrementCommentCount(postId: string, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
 
-  //   await repository.increment({ id: postId }, 'commentCount', 1);
-  // }
+    await repository.increment({ id: postId }, 'commentCount', 1);
+  }
 
-  // async decrementCommentCount(postId: number, qr?: QueryRunner) {
-  //   const repository = this.getRepository(qr);
+  async decrementCommentCount(postId: string, qr?: QueryRunner) {
+    const repository = this.getRepository(qr);
 
-  //   await repository.decrement({ id: postId }, 'commentCount', 1);
-  // }
+    await repository.decrement({ id: postId }, 'commentCount', 1);
+  }
 }
