@@ -191,9 +191,19 @@ export class PostsService {
   }
 
   async getRecommendPosts() {
+    // const categories = await this.catergoiesService.getAllSubCategories();
+
+    // console.log('== categories == : ', categories);
+
     const recommendLists = await this.postsRepository.find({
       ...DEFAULT_POST_FIND_OPTIONS,
-      where: { expose: true, mainExpose: true },
+      where: {
+        expose: true,
+        mainExpose: true,
+        category: {
+          categoryNumber: 2
+        }
+      },
       order: { readCount: 'DESC' },
       take: 10
     });
@@ -205,7 +215,24 @@ export class PostsService {
       take: 10
     });
 
-    if (recommendLists.length < 1 || referenceLists.length < 1) {
+    const algorithmLists = await this.postsRepository.find({
+      ...DEFAULT_POST_FIND_OPTIONS,
+      where: {
+        expose: true,
+        mainExpose: true,
+        category: {
+          categoryNumber: 3
+        }
+      },
+      order: { readCount: 'DESC' },
+      take: 10
+    });
+
+    if (
+      recommendLists.length < 1 ||
+      referenceLists.length < 1 ||
+      algorithmLists.length < 1
+    ) {
       throw new NotFoundException('해당하는 게시글이 없습니다.');
     }
 
@@ -239,6 +266,34 @@ export class PostsService {
         }
       })),
       referenceLists: referenceLists.map((post) => ({
+        ...post,
+        author: {
+          username: post.author.username,
+          email: post.author.email,
+          role: post.author.role
+        },
+        tags: post.tags
+          .sort((a, b) => a.sequence - b.sequence)
+          .map((item) => ({
+            id: item.id,
+            name: item.tag,
+            sequence: item.sequence
+          })),
+        thumbnails: post.thumbnails.map((item) => ({
+          id: item.id,
+          location: item.location,
+          originalname: item.originalname,
+          mimetype: item.mimetype,
+          size: item.size
+        })),
+        category: {
+          id: post.category && post.category.id,
+          categoryName: post.category && post.category.categoryName,
+          categoryNumber: post.category && post.category.categoryNumber,
+          subCategoryNumber: post.category && post.category.subCategoryNumber
+        }
+      })),
+      algorithmLists: algorithmLists.map((post) => ({
         ...post,
         author: {
           username: post.author.username,

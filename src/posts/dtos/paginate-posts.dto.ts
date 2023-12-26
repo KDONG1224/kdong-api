@@ -1,4 +1,10 @@
-import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString
+} from 'class-validator';
 import { BasePaginationDto } from 'src/common/dto/base-pagination.dto';
 
 export class PaginatePostsDto extends BasePaginationDto {
@@ -25,6 +31,10 @@ export class PaginatePostsDto extends BasePaginationDto {
   @IsString()
   @IsOptional()
   'where__category__id'?: string;
+
+  @IsNumber()
+  @IsOptional()
+  'where__category__categoryNumber'?: number;
 
   @IsIn(['ASC', 'DESC'])
   @IsOptional()
