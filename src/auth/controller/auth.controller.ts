@@ -1,6 +1,6 @@
 import { Body, Controller, Headers, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   AccessTokenGuard,
   RefreshTokenGuard
@@ -52,6 +52,7 @@ export class AuthController {
   @Post('signup')
   @IsPublic()
   @ApiOperation({ summary: '회원가입' })
+  @ApiBody({ description: '유저정보', type: RegisterUserDto })
   postRegisterId(@Body() body: RegisterUserDto) {
     return this.authService.registerWithUserId(body);
   }

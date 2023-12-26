@@ -74,8 +74,6 @@ export class AwsService {
 
       const s3Object = await this.s3Client.send(new DeleteObjectCommand(data));
 
-      console.log('== deleteFileFromS3: s3Object == : ', s3Object);
-
       return s3Object;
     } catch (e) {
       throw new BadRequestException(e.message);

@@ -7,6 +7,7 @@ import {
   UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { QueryRunner as QR } from 'typeorm';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
@@ -21,6 +22,7 @@ import { QueryRunner } from '../decorator/query-runner.decorator';
 import { TransactionInterceptor } from '../interceptor/transaction.interceptor';
 import { IsPublic } from '../decorator/is-public.decorator';
 
+@ApiTags('Common')
 @Controller('common')
 export class CommonController {
   constructor(private readonly commonService: CommonService) {}

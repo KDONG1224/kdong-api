@@ -1,5 +1,6 @@
 // base
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 // services
 import { CategoriesService } from '../service/categories.service';
@@ -19,6 +20,7 @@ import { Roles } from 'src/users/decorator/roles.decorator';
 // consts
 import { RolesEnum } from 'src/users/consts/roles.const';
 
+@ApiTags('Categories')
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}

@@ -9,9 +9,12 @@ import { AppModule } from './app.module';
 // documents
 import { BaseAPIDocument } from './common/swager/swager.document';
 
+// interceptors
+import { TransformInterceptor } from './common/interceptor/response.interceptor';
+
 // filters
 import { HttpExceptionFilter } from './common/exception-filter/http.exception-filter';
-import { TransformInterceptor } from './common/interceptor/response.interceptor';
+import { CreatePostsDto } from './posts/dtos/create-posts.dto';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -56,6 +59,7 @@ async function bootstrap() {
 
   const swagerConfig = new BaseAPIDocument().initializeOptions();
   const document = SwaggerModule.createDocument(app, swagerConfig);
+
   SwaggerModule.setup('v1/api', app, document);
 
   console.log('http://localhost:24181');

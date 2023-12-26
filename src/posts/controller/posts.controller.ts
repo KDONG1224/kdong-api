@@ -14,7 +14,17 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { QueryRunner as QR } from 'typeorm';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiExcludeEndpoint,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags
+} from '@nestjs/swagger';
 
 // services
 import { PostsService } from '../service/posts.service';
@@ -64,6 +74,24 @@ export class PostsController {
   @UseGuards(AdminUserGuard)
   @ApiOperation({ summary: '모든 게시글 가져오기' })
   @ApiOkResponse({ description: '모든 게시글 가져온다.', type: [PostsTable] })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: false,
+    description: '페이지 번호'
+  })
+  @ApiQuery({
+    name: 'order__createdAt',
+    type: String,
+    required: false,
+    description: 'DESC | ASC -> 기본값 DESC'
+  })
+  @ApiQuery({
+    name: 'where__category__id',
+    type: String,
+    required: false,
+    description: '카테고리 아이디'
+  })
   async getAllPosts(
     @Req() req: Express.Request & { isAdmin: boolean },
     @Query() query: PaginatePostsDto
@@ -87,6 +115,7 @@ export class PostsController {
 
   @Get('xml')
   @IsPublic()
+  @ApiExcludeEndpoint(true)
   async getAllPostsXml() {
     return await this.postsService.getAllPostsXml();
   }
@@ -102,6 +131,9 @@ export class PostsController {
   @IsPublic()
   @UseGuards(AdminUserGuard)
   @ApiOperation({ summary: '특정 게시글 가져오기' })
+  @ApiOkResponse({ description: '특정 게시글의 상세 정보', type: PostsTable })
+  @ApiResponse({ status: 404, description: '게시글을 찾을 수 없음' })
+  @ApiParam({ name: 'id', type: String })
   getPostById(
     @Req() req: Express.Request & { isAdmin: boolean },
     @Param('id') id: string
@@ -113,6 +145,7 @@ export class PostsController {
   @IsPublic()
   @UseGuards(AdminUserGuard)
   @ApiOperation({ summary: '추천 게시글 가져오기' })
+  @ApiOkResponse({ description: '추천 게시글 목록', type: [PostsTable] })
   async getRecommendPosts() {
     return await this.postsService.getRecommendPosts();
   }
@@ -130,6 +163,12 @@ export class PostsController {
   @FileUploadDto(['thumbnails'])
   @UseInterceptors(FilesInterceptor('thumbnails'))
   @ApiOperation({ summary: '게시글 생성' })
+  @ApiOkResponse({ description: '생성된 게시글 정보', type: PostsTable })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: '게시글 생성',
+    type: CreatePostsDto
+  })
   async postPosts(
     @User('id') id: string,
     @UploadedFiles() thumbnails: Array<Express.Multer.File & BaseFileUploadDto>,
@@ -170,6 +209,10 @@ export class PostsController {
   @UseInterceptors(FilesInterceptor('thumbnails'))
   @UseGuards(IsPostMineOrAdminGuard)
   @ApiOperation({ summary: '게시글 수정' })
+  @ApiOkResponse({ description: '수정된 게시글 정보', type: PostsTable })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdatePostsDto })
   async patchPosts(
     @User() user: UsersTable,
     @Param('id') id: string,
@@ -214,12 +257,16 @@ export class PostsController {
   @Delete(':id')
   @Roles(RolesEnum.ADMIN)
   @ApiOperation({ summary: '게시글 삭제' })
+  @ApiOkResponse({ description: '삭제 성공' })
+  @ApiParam({ name: 'id', type: String })
   deletePost(@Param('id') id: string) {
     return this.postsService.deletePost(id);
   }
 
   @Post('/like/:id')
   @ApiOperation({ summary: '게시글 좋아요' })
+  @ApiOkResponse({ description: '좋아요 성공' })
+  @ApiParam({ name: 'id', type: String })
   postLikePost(@Param('id') id: string) {
     return this.postsService.likePost(id);
   }
@@ -227,6 +274,11 @@ export class PostsController {
   @Post('/expose/:id')
   @Roles(RolesEnum.ADMIN)
   @ApiOperation({ summary: '게시글 노출' })
+  @ApiOkResponse({ description: '노출 설정 성공' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({
+    description: '노출 설정'
+  })
   postExposePost(@Param('id') id: string, @Body() body: { expose: boolean }) {
     return this.postsService.exposePost(id, body);
   }
@@ -234,6 +286,11 @@ export class PostsController {
   @Post('/expose/main/:id')
   @Roles(RolesEnum.ADMIN)
   @ApiOperation({ summary: '게시글 메인 노출' })
+  @ApiOkResponse({ description: '메인 노출 설정 성공' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({
+    description: '메인 노출 설정'
+  })
   postMainExposePost(
     @Param('id') id: string,
     @Body() body: { mainExpose: boolean }

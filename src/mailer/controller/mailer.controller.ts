@@ -1,5 +1,6 @@
 // base
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 // service
 import { MailerService } from '../service/mailer.service';
@@ -15,6 +16,7 @@ import { Roles } from 'src/users/decorator/roles.decorator';
 // consts
 import { RolesEnum } from 'src/users/consts/roles.const';
 
+@ApiTags('Mailer')
 @Controller('mailer')
 export class MailerController {
   constructor(private readonly mailerService: MailerService) {}

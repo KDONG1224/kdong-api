@@ -10,7 +10,7 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { QueryRunner as QR } from 'typeorm';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 // services
@@ -36,6 +36,7 @@ import { RolesEnum } from 'src/users/consts/roles.const';
 import { UsersTable } from 'src/users/entity/users.entity';
 import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
 
+@ApiTags('Banners')
 @Controller('banners')
 export class BannersController {
   constructor(

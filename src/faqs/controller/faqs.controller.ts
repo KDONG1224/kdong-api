@@ -1,11 +1,22 @@
+// base
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
+// services
 import { FaqsService } from '../service/faqs.service';
-import { IsPublic } from 'src/common/decorator/is-public.decorator';
+
+// dtos
 import { CreateFaqDto } from '../dto/create-faq.dto';
-import { Roles } from 'src/users/decorator/roles.decorator';
-import { RolesEnum } from 'src/users/consts/roles.const';
 import { UpdateFaqDto } from '../dto/update-faq.dto';
 
+// decorators
+import { Roles } from 'src/users/decorator/roles.decorator';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
+
+// consts
+import { RolesEnum } from 'src/users/consts/roles.const';
+
+@ApiTags('Faqs')
 @Controller('faqs')
 export class FaqsController {
   constructor(private readonly faqsService: FaqsService) {}
