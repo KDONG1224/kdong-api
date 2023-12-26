@@ -202,6 +202,32 @@ export class PostsController {
     return post;
   }
 
+  @Post('upload')
+  @Roles(RolesEnum.ADMIN)
+  @UseInterceptors(TransactionInterceptor)
+  @FileUploadDto(['files'])
+  @UseInterceptors(FilesInterceptor('files'))
+  @ApiOperation({ summary: '게시글 콘텐츠 이미지 업로드' })
+  @ApiConsumes('multipart/form-data')
+  async postPostsFiles(
+    @User('id') id: string,
+    @UploadedFiles() files: Array<Express.Multer.File & BaseFileUploadDto>,
+    @QueryRunner() qr: QR
+  ) {
+    for (let i = 0; i < files.length; i++) {
+      await this.commonService.uploadFile(
+        id,
+        null,
+        { ...files[i], sequence: i + 1 },
+        qr
+      );
+    }
+
+    return {
+      message: `${files.length}개의 파일을 업로드했습니다.`
+    };
+  }
+
   @Patch(':id')
   @Roles(RolesEnum.ADMIN)
   @UseInterceptors(TransactionInterceptor)

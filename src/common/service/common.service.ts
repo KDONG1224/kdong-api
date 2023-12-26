@@ -169,7 +169,7 @@ export class CommonService {
     const repository = this.getRepository(qr);
     const resUpload = await this.awsService.uploadFileToS3(file);
 
-    let data = {
+    let data: any = {
       originalname: file.originalname,
       filename: file.originalname,
       encoding: file.encoding,
@@ -179,13 +179,19 @@ export class CommonService {
       key: resUpload.key,
       folder: resUpload.folderName.replace('/', ''),
       location: resUpload.location,
-      sequence: file.sequence,
-      [type.type]: {
-        id: type.id
-      }
+      sequence: file.sequence || 1
     };
 
-    if (userId && userId !== '') {
+    if (type) {
+      data = {
+        ...data,
+        [type.type]: {
+          id: type.id
+        }
+      };
+    }
+
+    if (userId !== '') {
       data = {
         ...data,
         author: {
