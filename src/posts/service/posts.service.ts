@@ -228,14 +228,6 @@ export class PostsService {
       take: 10
     });
 
-    if (
-      recommendLists.length < 1 ||
-      referenceLists.length < 1 ||
-      algorithmLists.length < 1
-    ) {
-      throw new NotFoundException('해당하는 게시글이 없습니다.');
-    }
-
     return {
       recommendLists: recommendLists.map((post) => ({
         ...post,
