@@ -10,3 +10,10 @@ export const DEFAULT_POST_FIND_OPTIONS: FindManyOptions<PostsTable> = {
     category: true
   }
 };
+
+export const EXPOSE_POST_FIND_OPTIONS: FindManyOptions<PostsTable> = {
+  where: {
+    expose: true,
+    mainExpose: true
+  }
+};

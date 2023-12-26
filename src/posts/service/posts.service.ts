@@ -24,7 +24,10 @@ import { PaginatePostsDto } from '../dtos/paginate-posts.dto';
 
 // consts
 import { dummyPosts } from '../consts/dummy';
-import { DEFAULT_POST_FIND_OPTIONS } from '../consts/default-post-find-options.const';
+import {
+  DEFAULT_POST_FIND_OPTIONS,
+  EXPOSE_POST_FIND_OPTIONS
+} from '../consts/default-post-find-options.const';
 
 @Injectable()
 export class PostsService {
@@ -130,8 +133,10 @@ export class PostsService {
       ...DEFAULT_POST_FIND_OPTIONS,
       where: {
         createdAt: LessThan(post.createdAt),
-        expose: true,
-        mainExpose: true
+        ...EXPOSE_POST_FIND_OPTIONS.where,
+        category: {
+          categoryNumber: post.category.categoryNumber
+        }
       },
       order: { createdAt: 'DESC' },
       take: 1
@@ -142,8 +147,10 @@ export class PostsService {
       where: {
         createdAt: MoreThan(post.createdAt),
         id: Not(Equal(id)),
-        expose: true,
-        mainExpose: true
+        ...EXPOSE_POST_FIND_OPTIONS.where,
+        category: {
+          categoryNumber: post.category.categoryNumber
+        }
       },
       order: { createdAt: 'ASC' },
       take: 1
@@ -198,11 +205,7 @@ export class PostsService {
     const recommendLists = await this.postsRepository.find({
       ...DEFAULT_POST_FIND_OPTIONS,
       where: {
-        expose: true,
-        mainExpose: true,
-        category: {
-          categoryNumber: 2
-        }
+        ...EXPOSE_POST_FIND_OPTIONS.where
       },
       order: { readCount: 'DESC' },
       take: 10
@@ -210,7 +213,12 @@ export class PostsService {
 
     const referenceLists = await this.postsRepository.find({
       ...DEFAULT_POST_FIND_OPTIONS,
-      where: { expose: true, mainExpose: true },
+      where: {
+        ...EXPOSE_POST_FIND_OPTIONS.where,
+        category: {
+          categoryNumber: 2
+        }
+      },
       order: { updateAt: 'DESC' },
       take: 10
     });
@@ -218,8 +226,7 @@ export class PostsService {
     const algorithmLists = await this.postsRepository.find({
       ...DEFAULT_POST_FIND_OPTIONS,
       where: {
-        expose: true,
-        mainExpose: true,
+        ...EXPOSE_POST_FIND_OPTIONS.where,
         category: {
           categoryNumber: 3
         }

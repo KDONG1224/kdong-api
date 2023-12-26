@@ -81,18 +81,31 @@ export class CommonService {
   private composeFindOptions<T extends BaseTable>(
     dto: BasePaginationDto
   ): FindManyOptions<T> {
+    // eslint-disable-next-line prefer-const
     let where: FindOptionsWhere<T> = {};
     let order: FindOptionsOrder<T> = {};
 
     for (const [key, value] of Object.entries(dto)) {
-      // where__로 시작하면 where 필터를 파싱한다.
       if (key.startsWith('where__')) {
-        where = {
-          ...where,
-          ...this.parseWhereFilter(key, value)
-        };
+        const parsedWhere = this.parseWhereFilter(key, value);
+
+        for (const field in parsedWhere) {
+          if (parsedWhere.hasOwnProperty(field)) {
+            if (
+              where[field] &&
+              typeof parsedWhere[field] === 'object' &&
+              typeof where[field] === 'object'
+            ) {
+              where[field] = {
+                ...where[field],
+                ...parsedWhere[field]
+              };
+            } else {
+              where[field] = parsedWhere[field];
+            }
+          }
+        }
       } else if (key.startsWith('order__')) {
-        // order__로 시작하면 order 필터를 파싱한다.
         order = {
           ...order,
           ...this.parseWhereFilter(key, value)
@@ -129,9 +142,11 @@ export class CommonService {
     } else if (split.length === 3) {
       const [_, field, key] = split;
 
-      where[field] = {
-        [key]: value
-      };
+      if (!where[field]) {
+        where[field] = {};
+      }
+
+      where[field][key] = value;
     } else {
       const [_, field, operator] = split;
 
