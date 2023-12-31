@@ -177,13 +177,14 @@ export class PostsService {
             name: item.tag,
             sequence: item.sequence
           })),
-        thumbnails: post.thumbnails.map((item) => ({
-          id: item.id,
-          location: item.location,
-          originalname: item.originalname,
-          mimetype: item.mimetype,
-          size: item.size
-        })),
+        // thumbnails: post.thumbnails.map((item) => ({
+        //   id: item.id,
+        //   location: item.location,
+        //   originalname: item.originalname,
+        //   mimetype: item.mimetype,
+        //   size: item.size,
+        //   sequence: item.sequence
+        // })),
         category: {
           id: post.category && post.category.id,
           categoryName: post.category && post.category.categoryName,
@@ -363,7 +364,13 @@ export class PostsService {
   }
 
   async updatePosts(id: string, post: UpdatePostsDto) {
-    const find = await this.postsRepository.findOne({ where: { id } });
+    const find = await this.postsRepository.findOne({
+      where: { id },
+      relations: {
+        thumbnails: true,
+        tags: true
+      }
+    });
 
     if (!find) {
       throw new NotFoundException('해당하는 게시글이 없습니다.');
@@ -373,7 +380,6 @@ export class PostsService {
       ...find,
       ...post,
       tags: [],
-      thumbnails: [],
       category: {
         id: post.category
       }

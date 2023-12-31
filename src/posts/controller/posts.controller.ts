@@ -214,16 +214,21 @@ export class PostsController {
     @UploadedFiles() files: Array<Express.Multer.File & BaseFileUploadDto>,
     @QueryRunner() qr: QR
   ) {
+    const result = [];
+
     for (let i = 0; i < files.length; i++) {
-      await this.commonService.uploadFile(
+      const res = await this.commonService.uploadFile(
         id,
         null,
         { ...files[i], sequence: i + 1 },
         qr
       );
+
+      result.push(res);
     }
 
     return {
+      uploaded: result,
       message: `${files.length}개의 파일을 업로드했습니다.`
     };
   }
@@ -248,13 +253,8 @@ export class PostsController {
   ) {
     const update = await this.postsService.updatePosts(id, body);
 
-    if (body.hasThumbIds) {
-      await this.commonService.deleteFile(user.id, body.hasThumbIds, qr);
-    }
-
-    if (body.hasTagIds) {
-      await this.tagsSerivce.deleteTag(body.hasTagIds, qr);
-    }
+    await this.tagsSerivce.deleteTag(body.hasTagIds, qr);
+    await this.commonService.deleteFile(user.id, body.hasThumbIds, qr);
 
     const tags = body.tags.split(',');
 

@@ -1,31 +1,17 @@
 // base
 import { IsOptional, IsString } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { PickType } from '@nestjs/mapped-types';
 
 // dtos
 import { CreatePostsDto } from './create-posts.dto';
-import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
 
-// validation
-import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
-import { Type } from 'class-transformer';
-
-export class UpdatePostsDto extends PartialType(CreatePostsDto) {
-  @IsString({
-    message: stringValidationMessage
-  })
-  @IsOptional()
-  title?: string;
-
-  @IsString({
-    message: stringValidationMessage
-  })
-  @IsOptional()
-  content?: string;
-
-  @IsString({
-    each: true
-  })
+export class UpdatePostsDto extends PickType(CreatePostsDto, [
+  'title',
+  'content',
+  'mainColor',
+  'subColor'
+]) {
+  @IsString()
   @IsOptional()
   tags?: string;
 
@@ -33,13 +19,13 @@ export class UpdatePostsDto extends PartialType(CreatePostsDto) {
   @IsOptional()
   category?: string;
 
-  @Type(() => Array<Express.Multer.File & BaseFileUploadDto>)
-  @IsOptional()
-  thumbnails?: Array<Express.Multer.File & BaseFileUploadDto>;
-
   @IsString()
   @IsOptional()
   hasThumbIds?: string;
+
+  @IsString()
+  @IsOptional()
+  deleteThumbIds?: string;
 
   @IsString()
   @IsOptional()

@@ -9,6 +9,8 @@ export class AwsController {
   @Get('object/:fileKey')
   @ApiExcludeEndpoint(true)
   async getObject(@Param('fileKey') fileKey: string) {
+    console.log('== controller : fileKey == : ', fileKey);
+
     return await this.awsService.getS3Object(fileKey);
   }
 }

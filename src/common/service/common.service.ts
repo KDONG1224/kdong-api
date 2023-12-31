@@ -167,7 +167,12 @@ export class CommonService {
     qr?: QueryRunner
   ) {
     const repository = this.getRepository(qr);
+
     const resUpload = await this.awsService.uploadFileToS3(file);
+    console.log('=============');
+    console.log('== uploadFile == : file', file);
+    console.log('== uploadFile == : resUpload', resUpload);
+    console.log('=============');
 
     let data: any = {
       originalname: file.originalname,
@@ -201,12 +206,38 @@ export class CommonService {
     }
 
     const upload = repository.create(data);
-
-    await repository.save(upload);
+    const save = await repository.save(upload);
 
     return {
-      ...upload,
+      ...save,
       message: '파일 업로드에 성공했습니다.'
+    };
+  }
+
+  async findFile(fileIds?: string) {
+    const lists = [];
+
+    if (fileIds) {
+      const ids = fileIds.split(',');
+
+      for (let i = 0; i < ids.length; i++) {
+        const file = await this.fileRepository.findOne({
+          where: {
+            id: ids[i]
+          }
+        });
+
+        if (!file) {
+          throw new BadRequestException('파일이 존재하지 않습니다.');
+        }
+
+        lists.push(file);
+      }
+    }
+
+    return {
+      find: lists.sort((a, b) => a.sequence - b.sequence),
+      message: '파일 조회에 성공했습니다.'
     };
   }
 
@@ -222,6 +253,8 @@ export class CommonService {
             id: ids[i]
           }
         });
+
+        console.log('== deleteFile == : file', file);
 
         if (!file) {
           throw new BadRequestException('파일이 존재하지 않습니다.');
