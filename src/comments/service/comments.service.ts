@@ -19,7 +19,7 @@ import { UpdateCommentDto } from '../dto/update-comment.dto';
 import { ENV_JWT_SECRET_KEY } from 'src/common/consts/env-keys.const';
 
 // libraries
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class CommentsService {

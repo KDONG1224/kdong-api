@@ -14,7 +14,7 @@ import { RegisterUserDto } from '../dto/register-user.dto';
 import { UserLoginDto } from '../dto/user-login.dto';
 
 // libraries
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 // consts
 import { ENV_JWT_SECRET_KEY } from 'src/common/consts/env-keys.const';

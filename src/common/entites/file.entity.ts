@@ -1,10 +1,14 @@
+// base
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { BaseTable } from './base.entity';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+
+// entities
+import { BaseTable } from './base.entity';
 import { UsersTable } from 'src/users/entity/users.entity';
 import { PostsTable } from 'src/posts/entity/posts.entity';
 import { BannersTable } from 'src/banners/entity/banners.entity';
 import { GuestbooksTable } from 'src/guestbooks/entity/guestbooks.entity';
+import { BooksTable } from 'src/books/entity/books.entity';
 
 @Entity()
 export class FileTable extends BaseTable {
@@ -19,6 +23,9 @@ export class FileTable extends BaseTable {
 
   @ManyToOne(() => GuestbooksTable, (guestbook) => guestbook.guestbookFiles)
   guestbook: GuestbooksTable;
+
+  @ManyToOne(() => BooksTable, (book) => book.pages)
+  book: BooksTable;
 
   @Column({
     default: 1

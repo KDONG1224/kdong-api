@@ -7,7 +7,7 @@ import { UpdateGuestbookDto } from '../dto/update-guestbook.dto';
 import { ChangeExposeGuestbookDto } from '../dto/chage-expose-guestbook.dto';
 
 // libraries
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { PaginateGuestbookDto } from '../dto/paginate-guestbook.dto';
 import { CommonService } from 'src/common/service/common.service';
 

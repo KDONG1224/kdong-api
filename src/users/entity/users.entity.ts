@@ -23,6 +23,7 @@ import { RolesEnum } from '../consts/roles.const';
 import { emailValidationMessage } from 'src/common/validation-message/email-validator.message';
 import { legthValidationMessage } from 'src/common/validation-message/legth-validation.message';
 import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
+import { BooksTable } from 'src/books/entity/books.entity';
 
 @Entity()
 export class UsersTable extends BaseTable {
@@ -95,4 +96,7 @@ export class UsersTable extends BaseTable {
   @OneToMany(() => FileTable, (file) => file.author, { eager: true })
   @Exclude({ toPlainOnly: true })
   files: FileTable[];
+
+  @OneToMany(() => BooksTable, (book) => book.author)
+  books: BooksTable[];
 }

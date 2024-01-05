@@ -17,10 +17,14 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { BannersService } from '../service/banners.service';
 import { CommonService } from 'src/common/service/common.service';
 
+// entities
+import { UsersTable } from 'src/users/entity/users.entity';
+
 // dtos
 import { CreateBannerDto } from '../dto/create-banner.dto';
 import { UpdateBannerDto } from '../dto/update-banner.dto';
 import { BaseFileUploadDto } from 'src/common/dto/base-file-upload.dto';
+import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
 
 // interceptors
 import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
@@ -33,8 +37,6 @@ import { QueryRunner } from 'src/common/decorator/query-runner.decorator';
 
 // consts
 import { RolesEnum } from 'src/users/consts/roles.const';
-import { UsersTable } from 'src/users/entity/users.entity';
-import { FileUploadDto } from 'src/aws/dto/file-upload.dto';
 
 @ApiTags('Banners')
 @Controller('banners')

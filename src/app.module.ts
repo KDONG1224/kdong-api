@@ -60,6 +60,8 @@ import { GuestbooksModule } from './guestbooks/module/guestbooks.module';
 import { GuestbooksTable } from './guestbooks/entity/guestbooks.entity';
 import { CommentsModule } from './comments/module/comments.module';
 import { CommentsTable } from './comments/entity/comments.entity';
+import { BooksModule } from './books/module/books.module';
+import { BooksTable } from './books/entity/books.entity';
 
 @Module({
   imports: [
@@ -86,7 +88,8 @@ import { CommentsTable } from './comments/entity/comments.entity';
         FaqsTable,
         MailerTable,
         GuestbooksTable,
-        CommentsTable
+        CommentsTable,
+        BooksTable
       ],
       synchronize: true
     }),
@@ -103,7 +106,8 @@ import { CommentsTable } from './comments/entity/comments.entity';
     FaqsModule,
     MailerModule,
     GuestbooksModule,
-    CommentsModule
+    CommentsModule,
+    BooksModule
   ],
   controllers: [AppController],
   providers: [

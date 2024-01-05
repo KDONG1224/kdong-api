@@ -1,5 +1,9 @@
 // base
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException
+} from '@nestjs/common';
 import {
   FindManyOptions,
   FindOptionsOrder,
@@ -24,6 +28,13 @@ import { BaseFileUploadDto } from '../dto/base-file-upload.dto';
 // consts
 import { FILTER_MAPPER } from '../consts/filter-mapper.const';
 import { AwsService } from 'src/aws/service/aws.service';
+import sharp from 'sharp';
+import { PDFDocument } from 'pdf-lib';
+import * as path from 'path';
+import * as fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+import { fromPath, fromBuffer } from 'pdf2pic';
+import { Readable } from 'stream';
 
 @Injectable()
 export class CommonService {
@@ -162,17 +173,13 @@ export class CommonService {
 
   async uploadFile(
     userId: string,
-    type: { id: string; type: 'post' | 'banner' | 'guestbook' },
+    type: { id: string; type: string },
     file: Express.Multer.File & BaseFileUploadDto,
     qr?: QueryRunner
   ) {
     const repository = this.getRepository(qr);
 
     const resUpload = await this.awsService.uploadFileToS3(file);
-    console.log('=============');
-    console.log('== uploadFile == : file', file);
-    console.log('== uploadFile == : resUpload', resUpload);
-    console.log('=============');
 
     let data: any = {
       originalname: file.originalname,
@@ -268,5 +275,162 @@ export class CommonService {
     return {
       message: '파일 삭제에 성공했습니다.'
     };
+  }
+
+  saveBufferToTempFile(file: Express.Multer.File) {
+    const id = uuidv4();
+    const tempDir = path.join(__dirname, '../../../public/temp');
+    const tempFilePath = path.join(tempDir, `${id}.pdf`);
+
+    // temp 디렉터리가 존재하지 않으면 생성
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+
+    fs.writeFileSync(tempFilePath, file.buffer);
+    return { dir: tempDir, path: tempFilePath, filename: id };
+  }
+
+  convertToMulterFileObject(filePath: string, filename: string) {
+    const fullFilePath = path.join(filePath, filename);
+
+    const fileStats = fs.statSync(fullFilePath);
+
+    return {
+      fieldname: 'file',
+      originalname: filename,
+      encoding: '7bit',
+      mimetype: 'image/jpeg',
+      destination: filePath,
+      filename: filename,
+      path: fullFilePath,
+      size: fileStats.size
+    };
+  }
+
+  deleteTempFile(path: string) {
+    fs.unlinkSync(path);
+  }
+
+  async convertPdfToImages(
+    userId: string,
+    file: Express.Multer.File & BaseFileUploadDto,
+    book: any,
+    qr: QueryRunner
+  ) {
+    const tempFilePath = this.saveBufferToTempFile(file);
+    const pdfDoc = await PDFDocument.load(file.buffer);
+    const totalPages = pdfDoc.getPageCount();
+
+    const options = {
+      density: 100,
+      saveFilename: tempFilePath.filename,
+      savePath: path.join(__dirname, '../../../public/images'),
+      format: 'jpeg',
+      width: book.width,
+      height: book.height
+    };
+
+    const convert = fromPath(tempFilePath.path, options);
+
+    const result = [];
+    const imageBuffers = [];
+
+    /**
+     * PDF -> Image 변환
+     */
+    for (let i = 1; i <= totalPages; i++) {
+      const res = await convert(i, { responseType: 'image' })
+        .then((data) => data)
+        .then(async (image) => {
+          return await convert(i, { responseType: 'buffer' }).then((res) => {
+            const fileStats = fs.statSync(image.path);
+
+            return {
+              fieldname: 'file',
+              originalname: image.name,
+              encoding: '7bit',
+              mimetype: 'image/jpeg',
+              destination: image.path,
+              filename: image.name,
+              path: image.path,
+              size: fileStats.size,
+              buffer: res.buffer
+            };
+          });
+        })
+        .catch((err) => {
+          console.log('Error: ', err);
+
+          throw new InternalServerErrorException(
+            '이미지 변환에 실패했습니다. 다시 시도해주세요.'
+          );
+        });
+
+      imageBuffers.push(res);
+    }
+
+    /**
+     * Image -> AWS S3 업로드
+     */
+    for (let i = 0; i < imageBuffers.length; i++) {
+      const image = await this.uploadFile(
+        userId,
+        { id: book.id, type: 'book' },
+        { ...imageBuffers[i], sequence: i + 1 },
+        qr
+      );
+
+      result.push(image);
+    }
+
+    this.deleteTempFile(tempFilePath.path);
+
+    for (let i = 0; i < imageBuffers.length; i++) {
+      this.deleteTempFile(imageBuffers[i].path);
+    }
+
+    return {
+      bookImages: result,
+      message: '이미지 변환에 성공했습니다.'
+    };
+  }
+
+  async cutImages(
+    images: any,
+    targetWidth: any,
+    targetHeight: any,
+    originalFilename: any
+  ) {
+    const cutImages = [];
+    const baseFilename = originalFilename.replace(/\.[^/.]+$/, '');
+    for (let i = 0; i < images.length; i++) {
+      const pageNumber = i + 1;
+      const leftCut = await sharp(images[i])
+        .extract({ left: 0, top: 0, width: targetWidth, height: targetHeight })
+        .toBuffer();
+      const leftFilename = `${baseFilename}_page${pageNumber}_left.png`;
+      const rightCut = await sharp(images[i])
+        .extract({
+          left: images.imageWidth - targetWidth,
+          top: 0,
+          width: targetWidth,
+          height: targetHeight
+        })
+        .toBuffer();
+      const rightFilename = `${baseFilename}_page${pageNumber}_right.png`;
+      cutImages.push(
+        { buffer: leftCut, filename: leftFilename },
+        { buffer: rightCut, filename: rightFilename }
+      );
+    }
+    return cutImages;
+  }
+
+  async reorderImages(images: any) {
+    if (images.length < 2) return images;
+    const firstImage = images.shift();
+    const lastImage = images.pop();
+    return [firstImage, ...images, lastImage];
   }
 }
