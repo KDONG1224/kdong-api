@@ -28,7 +28,7 @@ import { BaseFileUploadDto } from '../dto/base-file-upload.dto';
 // consts
 import { FILTER_MAPPER } from '../consts/filter-mapper.const';
 import { AwsService } from 'src/aws/service/aws.service';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 import { PDFDocument } from 'pdf-lib';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -396,36 +396,36 @@ export class CommonService {
     };
   }
 
-  async cutImages(
-    images: any,
-    targetWidth: any,
-    targetHeight: any,
-    originalFilename: any
-  ) {
-    const cutImages = [];
-    const baseFilename = originalFilename.replace(/\.[^/.]+$/, '');
-    for (let i = 0; i < images.length; i++) {
-      const pageNumber = i + 1;
-      const leftCut = await sharp(images[i])
-        .extract({ left: 0, top: 0, width: targetWidth, height: targetHeight })
-        .toBuffer();
-      const leftFilename = `${baseFilename}_page${pageNumber}_left.png`;
-      const rightCut = await sharp(images[i])
-        .extract({
-          left: images.imageWidth - targetWidth,
-          top: 0,
-          width: targetWidth,
-          height: targetHeight
-        })
-        .toBuffer();
-      const rightFilename = `${baseFilename}_page${pageNumber}_right.png`;
-      cutImages.push(
-        { buffer: leftCut, filename: leftFilename },
-        { buffer: rightCut, filename: rightFilename }
-      );
-    }
-    return cutImages;
-  }
+  // async cutImages(
+  //   images: any,
+  //   targetWidth: any,
+  //   targetHeight: any,
+  //   originalFilename: any
+  // ) {
+  //   const cutImages = [];
+  //   const baseFilename = originalFilename.replace(/\.[^/.]+$/, '');
+  //   for (let i = 0; i < images.length; i++) {
+  //     const pageNumber = i + 1;
+  //     const leftCut = await sharp(images[i])
+  //       .extract({ left: 0, top: 0, width: targetWidth, height: targetHeight })
+  //       .toBuffer();
+  //     const leftFilename = `${baseFilename}_page${pageNumber}_left.png`;
+  //     const rightCut = await sharp(images[i])
+  //       .extract({
+  //         left: images.imageWidth - targetWidth,
+  //         top: 0,
+  //         width: targetWidth,
+  //         height: targetHeight
+  //       })
+  //       .toBuffer();
+  //     const rightFilename = `${baseFilename}_page${pageNumber}_right.png`;
+  //     cutImages.push(
+  //       { buffer: leftCut, filename: leftFilename },
+  //       { buffer: rightCut, filename: rightFilename }
+  //     );
+  //   }
+  //   return cutImages;
+  // }
 
   async reorderImages(images: any) {
     if (images.length < 2) return images;
