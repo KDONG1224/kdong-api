@@ -65,14 +65,23 @@ export class BooksService {
     const pdfDoc = await PDFDocument.load(file.buffer);
     const totalPages = pdfDoc.getPageCount();
 
+    const firstPage = pdfDoc.getPage(0);
+    const { width: pageWidth, height: pageHeight } = firstPage.getSize();
+
+    console.log('== dto == : ', dto);
+
     const book = this.booksRepository.create({
       ...dto,
+      width: dto.isCutting ? dto.width : pageWidth,
+      height: dto.isCutting ? dto.height : pageHeight,
       pageLength: totalPages,
       pages: [],
       author: {
         id: user.id
       }
     });
+
+    console.log('== book == : ', book);
 
     await this.booksRepository.save(book);
 

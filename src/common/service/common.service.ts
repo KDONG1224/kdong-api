@@ -322,13 +322,16 @@ export class CommonService {
     const pdfDoc = await PDFDocument.load(file.buffer);
     const totalPages = pdfDoc.getPageCount();
 
+    const firstPage = pdfDoc.getPage(0);
+    const { width: pageWidth, height: pageHeight } = firstPage.getSize();
+
     const options = {
       density: 100,
       saveFilename: tempFilePath.filename,
       savePath: path.join(__dirname, '../../../public/images'),
       format: 'jpeg',
-      width: book.width,
-      height: book.height
+      width: book.isCutting ? book.width : pageWidth,
+      height: book.isCutting ? book.height : pageHeight
     };
 
     const convert = fromPath(tempFilePath.path, options);
@@ -358,6 +361,11 @@ export class CommonService {
               buffer: res.buffer
             };
           });
+        })
+        .then((result) => {
+          console.log('== pdf -> image == : ', result);
+
+          return result;
         })
         .catch((err) => {
           console.log('Error: ', err);

@@ -51,6 +51,13 @@ export class BooksTable extends BaseTable {
   @ApiProperty({ description: '책 노출 여부' })
   expose: boolean;
 
+  @Column({
+    default: false
+  })
+  @IsBoolean()
+  @ApiProperty({ description: '책 커팅 여부' })
+  isCutting: boolean;
+
   @ApiProperty({ description: '책 저자' })
   @ManyToOne(() => UsersTable, (user) => user.books)
   author: UsersTable;
