@@ -23,6 +23,7 @@ export class BooksService {
 
   async getBooksLists() {
     const booksLists = await this.booksRepository.find({
+      where: { expose: true },
       relations: {
         author: true,
         pages: true
@@ -30,7 +31,10 @@ export class BooksService {
     });
 
     return {
-      booksLists,
+      booksLists: booksLists.map((book) => ({
+        ...book,
+        pages: book.pages.sort((a, b) => a.sequence - b.sequence)
+      })),
       message: '책 리스트 가져오기 성공'
     };
   }
