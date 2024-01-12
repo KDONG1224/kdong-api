@@ -62,8 +62,8 @@ async function bootstrap() {
 
   SwaggerModule.setup('v1/api', app, document);
 
-  console.log('http://localhost:24181');
+  console.log('http://localhost:24181 || 2417');
 
-  await app.listen(process.env.PORT || 24181);
+  await app.listen(process.env.PORT);
 }
 bootstrap();

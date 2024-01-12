@@ -23,6 +23,13 @@ export class BooksTable extends BaseTable {
   @ApiProperty({ description: '책 소개' })
   description: string;
 
+  @Column({
+    default: null
+  })
+  @IsString()
+  @ApiProperty({ description: '책 썸네일' })
+  thumbnail: string;
+
   @Column()
   @IsNumber()
   @ApiProperty({ description: '책 장수' })

@@ -79,12 +79,16 @@ export class BooksController {
 
     const result = await this.booksService.createBook(user, dto, files[0]);
 
-    await this.commonService.convertPdfToImages(
+    const books = await this.commonService.convertPdfToImages(
       user.id,
       files[0],
       result.book,
       qr
     );
+
+    await this.booksService.updateBook(result.book.id, {
+      thumbnail: books[0].location
+    });
 
     const res = this.booksService.getBookById(result.book.id);
 

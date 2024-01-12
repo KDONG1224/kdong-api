@@ -13,6 +13,7 @@ import { CreateBookDto } from '../dto/create-book.dto';
 
 // libraries
 import { PDFDocument } from 'pdf-lib';
+import { UpdateBookDto } from '../dto/update-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -25,16 +26,13 @@ export class BooksService {
     const booksLists = await this.booksRepository.find({
       where: { expose: true },
       relations: {
-        author: true,
-        pages: true
+        author: true
+        // pages: true
       }
     });
 
     return {
-      booksLists: booksLists.map((book) => ({
-        ...book,
-        pages: book.pages.sort((a, b) => a.sequence - b.sequence)
-      })),
+      booksLists,
       message: '책 리스트 가져오기 성공'
     };
   }
@@ -92,6 +90,22 @@ export class BooksService {
     return {
       book,
       message: '책 생성하기 성공'
+    };
+  }
+
+  async updateBook(id: string, body: UpdateBookDto) {
+    const book = await this.booksRepository.findOne({
+      where: { id }
+    });
+
+    if (!book) {
+      throw new BadRequestException('책이 존재하지 않습니다.');
+    }
+
+    await this.booksRepository.update({ id }, body);
+
+    return {
+      message: '책 수정하기 성공'
     };
   }
 
