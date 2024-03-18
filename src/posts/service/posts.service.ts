@@ -49,8 +49,29 @@ export class PostsService {
       order: { createdAt: 'DESC' }
     });
 
+    const not = [
+      '0a702bf0-e1f0-4aa4-8710-603df1241641',
+      '0c2f0fbd-cb95-4b91-886f-b43dddf8fee8',
+      '1edab77c-9bab-4593-91ab-29a71b12c1fe',
+      '2eeea7cc-ee28-4811-8a50-8ea4b9e6b771',
+      '49fc830f-3fff-453b-8f31-b6aef1045bf9',
+      '50ee667f-a6e9-4797-9ebe-fbd8298f74e4',
+      '5712f80a-ca0e-446a-8985-cf40770d586c',
+      '6e67ef7e-b80b-4bd8-a2b2-2c9491a49e4f',
+      '93990e72-cc09-4d72-8c50-a6f431bedd75',
+      '9a0fd032-93ea-49b5-a45f-ca927107af03',
+      'a6009041-4022-444a-883e-46ded68549d2',
+      'ac8d7df7-b956-4f68-8efb-ab18fd9effc0',
+      'b346587a-139e-4eb9-9f8a-3ab6b74f224d',
+      'd9ea56fb-a825-4615-b7f3-d655a3555ba6',
+      'f87275f1-f6d6-462e-b563-a7034c30c341',
+      'fa66b6a9-0425-4a01-b81e-68e7e07c0c40'
+    ];
+
+    const result = articles.filter((a) => not.find((n) => n !== a.id));
+
     return {
-      articles,
+      articles: result,
       message: '모든 게시글을 가져왔습니다.'
     };
   }
